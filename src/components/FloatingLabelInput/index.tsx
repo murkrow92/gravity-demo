@@ -60,7 +60,7 @@ const FloatingLabelInput = (props: FloatingLabelInputProps) => {
 
     const containerStyle = useAnimatedStyle(() => ({
         padding: 8,
-        marginVertical: 4,
+        marginTop: 4,
         width: '100%',
         flexDirection: 'row',
         justifyContent: 'space-between',
