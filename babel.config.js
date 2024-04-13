@@ -22,6 +22,7 @@ module.exports = {
                     '@components': ['./src/components'],
                     '@theme': ['./src/theme'],
                     '@hooks': ['./src/hooks'],
+                    '@api': ['./src/api'],
                 },
             },
         ],

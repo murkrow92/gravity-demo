@@ -19,7 +19,7 @@ module.exports = {
         sourceType: 'module',
     },
     ignorePatterns: ['node_modules/', 'metro.config.js'],
-    plugins: ['react', '@typescript-eslint', 'typescript-enum'],
+    plugins: ['react', '@typescript-eslint', 'typescript-enum', '@tanstack/query'],
     rules: {
         'react/jsx-filename-extension': [
             2,

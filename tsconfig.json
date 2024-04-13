@@ -8,6 +8,7 @@
         "@typing/*": ["./src/typing/*"],
         "@components/*": ["./src/components/*"],
         "@hooks/*": ["./src/hooks/*"],
+        "@api/*": ["./src/api/*"],
         "@theme/*": ["./src/theme/*"],
         "@theme": ["./src/theme/index.ts"],
     }
