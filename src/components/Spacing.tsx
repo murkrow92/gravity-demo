@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleProp, View, ViewStyle } from 'react-native';
 
-type Size = 4 | 6 | 8 | 12 | 16 | 32;
+type Size = 4 | 6 | 8 | 12 | 16 | 24 | 32;
 
 type Direction = 'vertical' | 'horizontal';
 
