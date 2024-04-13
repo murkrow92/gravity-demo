@@ -5,7 +5,11 @@
     "paths": {
         "@navigation/*": ["./src/navigation/*"],
         "@screens/*": ["./src/screens/*"],
-        "@typing/*": ["./src/typing/*"]
+        "@typing/*": ["./src/typing/*"],
+        "@components/*": ["./src/components/*"],
+        "@hooks/*": ["./src/hooks/*"],
+        "@theme/*": ["./src/theme/*"],
+        "@theme": ["./src/theme/index.ts"],
     }
   },
 }

@@ -9,7 +9,11 @@ const RootStack = createNativeStackNavigator<RootStackParamList>();
 function RootNavigation() {
     return (
         <RootStack.Navigator>
-            <RootStack.Screen name="Login" component={LoginScreen} />
+            <RootStack.Screen
+                name="Login"
+                options={{ headerShown: false }}
+                component={LoginScreen}
+            />
             <RootStack.Screen name="CurrencyPrices" component={CurrencyPriceScreen} />
         </RootStack.Navigator>
     );
