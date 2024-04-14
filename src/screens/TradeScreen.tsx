@@ -39,13 +39,13 @@ const TradeScreen: React.FC = () => {
     const calculateAmount = (newTotal: string) => {
         const numericPrice = parseFloat(price);
         const numericTotal = parseFloat(newTotal);
-        if (!Number.isNaN(numericPrice) && numericPrice > 0) {
+        if (!Number.isNaN(numericTotal) && !Number.isNaN(numericPrice) && numericPrice > 0) {
             setAmount((numericTotal / numericPrice).toString());
         }
     };
 
     const handlePercentagePress = (percentage: number) => {
-        const numericTotal = (availableBalance * percentage).toFixed(2);
+        const numericTotal = (availableBalance * percentage).toFixed(8);
         setTotal(numericTotal);
         calculateAmount(numericTotal);
     };
@@ -78,13 +78,21 @@ const TradeScreen: React.FC = () => {
         }
     };
 
+    const resetInputs = () => {
+        setAmount('');
+        setTotal('');
+    };
+
     return (
         <View style={styles.container}>
             <ScrollView>
                 <View style={styles.buttonGroup}>
                     <TouchableOpacity
                         style={[styles.headerButton, isBuyMode && styles.buyButton]}
-                        onPress={() => setIsBuyMode(true)}
+                        onPress={() => {
+                            resetInputs();
+                            setIsBuyMode(true);
+                        }}
                     >
                         <Text
                             style={[
@@ -97,7 +105,10 @@ const TradeScreen: React.FC = () => {
                     </TouchableOpacity>
                     <TouchableOpacity
                         style={[styles.headerButton, !isBuyMode && styles.sellButton]}
-                        onPress={() => setIsBuyMode(false)}
+                        onPress={() => {
+                            resetInputs();
+                            setIsBuyMode(false);
+                        }}
                     >
                         <Text
                             style={[
