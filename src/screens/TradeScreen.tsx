@@ -18,12 +18,20 @@ const TradeScreen: React.FC = () => {
     const { params } = useRoute<Props['route']>();
     const navigation = useNavigation();
     const { symbol, suffix, price: paramPrice = '' } = params;
+    const initialPrice = useMemo(() => {
+        const numericPrice = parseFloat(paramPrice);
+        if (!Number.isNaN(numericPrice) && numericPrice > 0.01) {
+            return paramPrice;
+        } else {
+            return '0.01';
+        }
+    }, [paramPrice]);
     const [mainToken, tokenToCompare] = useMemo(() => {
         return suffix ? detachSymbol(symbol, suffix) : ['', ''];
     }, [symbol, suffix]);
     const [isBuyMode, setIsBuyMode] = useState(true);
     const [orderType, setOrderType] = useState<'LIMIT' | 'MARKET'>('LIMIT');
-    const [price, setPrice] = useState(paramPrice);
+    const [price, setPrice] = useState(initialPrice);
     const [amount, setAmount] = useState('');
     const [total, setTotal] = useState('');
     const [confirmModalVisible, setConfirmModalVisible] = useState(false);
@@ -31,6 +39,21 @@ const TradeScreen: React.FC = () => {
     const tokenToTrade = isBuyMode ? tokenToCompare : mainToken;
     const tokenToTradeFor = isBuyMode ? mainToken : tokenToCompare;
     const availableBalance = availableBalances[tokenToTrade]?.tokenBalance || 0;
+
+    const isTradeValid = useMemo(() => {
+        const numericTotal = parseFloat(total);
+        const numericPrice = parseFloat(price);
+        const numericAmount = parseFloat(amount);
+        return (
+            !Number.isNaN(numericTotal) &&
+            numericTotal > 0 &&
+            numericTotal <= availableBalance &&
+            !Number.isNaN(numericPrice) &&
+            numericPrice > 0.01 &&
+            !Number.isNaN(numericAmount) &&
+            numericAmount > 0.01
+        );
+    }, [total]);
 
     const calculateTotal = (newPrice: string, newAmount: string) => {
         const numericPrice = parseFloat(newPrice);
@@ -58,15 +81,6 @@ const TradeScreen: React.FC = () => {
         setConfirmModalVisible(true);
     };
 
-    const validateNumericInputs = (text: string) => {
-        const numericText = parseFloat(text);
-        if (Number.isNaN(numericText)) {
-            throw new Error('Input must be numeric');
-        } else if (numericText < 0.01) {
-            throw new Error('Value cannot be less than 0.01');
-        }
-    };
-
     const resetInputs = () => {
         setAmount('');
         setTotal('');
@@ -78,8 +92,8 @@ const TradeScreen: React.FC = () => {
                 <>
                     <SuffixInput
                         title="Price"
-                        placeholder="0"
-                        placeholderTextColor={Theme.TEXT_COLOR_LIGHT}
+                        placeholder="Input your desired price"
+                        placeholderTextColor="rgba(255, 255, 255, 0.4)"
                         suffix={tokenToTrade}
                         value={price}
                         onChangeText={newPrice => {
@@ -87,12 +101,22 @@ const TradeScreen: React.FC = () => {
                             calculateTotal(newPrice, amount);
                         }}
                         keyboardType="numeric"
-                        validator={validateNumericInputs}
+                        validator={text => {
+                            if (text.length === 0) {
+                                throw new Error(`Please input your desired price`);
+                            }
+                            const numericText = parseFloat(text);
+                            if (Number.isNaN(numericText)) {
+                                throw new Error('Input must be numeric');
+                            } else if (numericText < 0.01) {
+                                throw new Error('Value cannot be less than 0.01');
+                            }
+                        }}
                     />
                     <SuffixInput
-                        title="Amount"
-                        placeholder="0"
-                        placeholderTextColor={Theme.TEXT_COLOR_LIGHT}
+                        title="Quantity"
+                        placeholder="Input your desired quantity"
+                        placeholderTextColor="rgba(255, 255, 255, 0.4)"
                         suffix={tokenToTradeFor}
                         value={amount}
                         onChangeText={newAmount => {
@@ -100,7 +124,17 @@ const TradeScreen: React.FC = () => {
                             calculateTotal(price, newAmount);
                         }}
                         keyboardType="numeric"
-                        validator={validateNumericInputs}
+                        validator={text => {
+                            if (text.length === 0) {
+                                throw new Error(`Please input ${tokenToTradeFor} quantity`);
+                            }
+                            const numericText = parseFloat(text);
+                            if (Number.isNaN(numericText)) {
+                                throw new Error('Input must be numeric');
+                            } else if (numericText < 0.01) {
+                                throw new Error('Value cannot be less than 0.01');
+                            }
+                        }}
                     />
                 </>
             )
@@ -213,8 +247,6 @@ const TradeScreen: React.FC = () => {
                 </View>
                 <SuffixInput
                     style={{ marginTop: 20 }}
-                    placeholder="0"
-                    placeholderTextColor={Theme.TEXT_COLOR_LIGHT}
                     value={total}
                     onChangeText={newTotal => {
                         setTotal(newTotal);
@@ -236,7 +268,12 @@ const TradeScreen: React.FC = () => {
                 />
             </ScrollView>
             <PrimaryButton
-                buttonStyle={{ backgroundColor: isBuyMode ? Theme.PRIMARY : Theme.WARNING }}
+                buttonStyle={
+                    isTradeValid
+                        ? { backgroundColor: isBuyMode ? Theme.PRIMARY : Theme.WARNING }
+                        : { backgroundColor: Theme.BORDER }
+                }
+                disabled={isTradeValid}
                 title={`${isBuyMode ? 'Buy' : 'Sell'} ${mainToken}`}
                 onPress={handleOrderConfirmation}
             />

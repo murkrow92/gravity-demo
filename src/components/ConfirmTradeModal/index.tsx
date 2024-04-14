@@ -3,6 +3,8 @@ import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Alert } fr
 import Modal from 'react-native-modal';
 import Theme from '@theme';
 import { Font } from '@theme/font.ts';
+import { useToast } from '../../providers/ToastProvider.tsx';
+import Feather from 'react-native-vector-icons/Feather';
 
 interface ConfirmationModalProps {
     isVisible: boolean;
@@ -17,14 +19,17 @@ const ConfirmTradeModal: React.FC<ConfirmationModalProps> = ({
 }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
-
+    const { open: openToast } = useToast();
     const handleConfirm = async () => {
         setIsLoading(true);
         try {
-            // Simulate API call
             setTimeout(() => {
                 setIsLoading(false);
-                Alert.alert('Success', `Your trade was successfully placed!`);
+                openToast({
+                    title: 'Success',
+                    message: `Your trade was successfully placed!`,
+                    Icon: <Feather name="check-circle" color={Theme.PRIMARY} size={24} />,
+                });
                 onConfirm();
             }, 2000);
         } catch (e) {

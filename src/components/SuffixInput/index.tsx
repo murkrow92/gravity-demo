@@ -31,7 +31,7 @@ const SuffixInput: React.FC<SuffixInputProps> = ({
     return (
         <View style={[styles.container, style]}>
             <View style={styles.inputContainer}>
-                <Text style={styles.label}>{title}</Text>
+                <Text style={styles.title}>{title}</Text>
                 <TextInput
                     style={[styles.input]}
                     {...rest}
@@ -56,11 +56,10 @@ const styles = StyleSheet.create({
     container: {
         marginBottom: 4,
     },
-    label: {
-        color: '#FFFFFF',
+    title: {
+        color: 'rgba(255, 255, 255, 0.6)',
         fontSize: 14,
         fontWeight: 'bold',
-        marginBottom: 5,
     },
     inputContainer: {
         flexDirection: 'row',
@@ -76,7 +75,7 @@ const styles = StyleSheet.create({
         textAlign: 'right',
     },
     suffix: {
-        color: '#AAAAAA',
+        color: Theme.TEXT_COLOR_LIGHT,
         fontSize: 14,
     },
     error: {

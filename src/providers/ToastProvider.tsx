@@ -15,7 +15,7 @@ import Theme from '@theme';
 export interface ToastOpenParams {
     title: string;
     message: string;
-    Icon: React.ComponentType;
+    Icon: React.ReactNode;
 }
 
 export interface ToastRef {
@@ -28,14 +28,12 @@ const defaultModalRef = {
     close: () => null,
 };
 
-const ModalContext = createContext<{ toast: ToastRef }>({
-    toast: defaultModalRef,
-});
+const ToastContext = createContext<ToastRef>(defaultModalRef);
 
 const Toast = forwardRef((props, ref) => {
     const [title, setTitle] = useState('');
     const [message, setMessage] = useState('');
-    const [Icon, setIcon] = useState<React.ComponentType | undefined>(undefined);
+    const [icon, setIcon] = useState<React.ReactNode | undefined>(undefined);
 
     const [visible, setVisible] = useState(false);
 
@@ -54,7 +52,9 @@ const Toast = forwardRef((props, ref) => {
                     toValue: 0,
                     duration: 200,
                     useNativeDriver: true,
-                }).start();
+                }).start(() => {
+                    setVisible(false);
+                });
             }, 2000);
 
             return () => clearTimeout(timer);
@@ -79,11 +79,7 @@ const Toast = forwardRef((props, ref) => {
 
     return (
         <Animated.View style={[styles.toast, { opacity: fadeAnim }]}>
-            {Icon ? (
-                <View style={styles.toastIconContainer}>
-                    <Icon />
-                </View>
-            ) : null}
+            {icon ? <View style={styles.toastIconContainer}>{icon}</View> : null}
             <View style={{ flex: 1 }}>
                 <Text style={styles.toastTitle}>{title}</Text>
                 <Text style={styles.toastMessage}>{message}</Text>
@@ -92,35 +88,42 @@ const Toast = forwardRef((props, ref) => {
     );
 });
 
-const ModalProvider: React.FC<PropsWithChildren> = ({ children }) => {
+const ToastProvider: React.FC<PropsWithChildren> = ({ children }) => {
     const toastRef = useRef<ToastRef>(defaultModalRef);
 
-    const [value, setValue] = useState({
-        toast: toastRef.current,
-    });
+    const [value, setValue] = useState(toastRef.current);
 
     useEffect(() => {
-        setValue({
-            toast: toastRef.current,
-        });
+        setValue(toastRef.current);
     }, []);
+
     return (
-        <ModalContext.Provider value={value}>
+        <ToastContext.Provider value={value}>
             {children}
             <Toast ref={toastRef} />
-        </ModalContext.Provider>
+        </ToastContext.Provider>
     );
 };
 
-export const useModal = () => useContext(ModalContext);
+export const useToast = () => useContext(ToastContext);
 
-export default ModalProvider;
+export default ToastProvider;
 
 const styles = StyleSheet.create({
     toast: {
         paddingHorizontal: 12,
         marginHorizontal: 16,
         backgroundColor: Theme.POPUP_BACKGROUND_COLOR,
+        position: 'absolute',
+        top: 30,
+        left: 0,
+        right: 0,
+        alignItems: 'center',
+        padding: 10,
+        borderRadius: 5,
+        zIndex: 1000,
+        flexDirection: 'row',
+        shadowColor: '#000',
     },
     toastIconContainer: {
         marginRight: 12,
@@ -128,12 +131,12 @@ const styles = StyleSheet.create({
     toastTitle: {
         fontFamily: Font.IBM.bold,
         fontSize: 14,
-        backgroundColor: Theme.TEXT_COLOR_LIGHT,
+        color: Theme.TEXT_COLOR_LIGHT,
     },
     toastMessage: {
         marginTop: 8,
         fontFamily: Font.IBM.regular,
         fontSize: 14,
-        backgroundColor: Theme.TEXT_COLOR_LIGHT,
+        color: Theme.TEXT_COLOR_LIGHT,
     },
 });
