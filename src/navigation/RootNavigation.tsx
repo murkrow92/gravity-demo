@@ -59,8 +59,12 @@ function RootNavigation() {
 
     React.useEffect(() => {
         const bootstrapAsync = async () => {
-            const userToken = await AsyncStorage.getItem('userToken');
-            dispatch({ type: 'RESTORE_TOKEN', token: userToken });
+            try {
+                const userToken = await AsyncStorage.getItem('userToken');
+                dispatch({ type: 'RESTORE_TOKEN', token: userToken });
+            } catch (e) {
+                console.log('e', e);
+            }
         };
         bootstrapAsync();
     }, []);
