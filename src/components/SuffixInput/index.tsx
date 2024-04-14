@@ -11,14 +11,15 @@ import {
 import Theme from '@theme';
 import { Font } from '@theme/font.ts';
 
-interface SuffixInput extends TextInputProps {
+interface SuffixInputProps extends TextInputProps {
     title: string;
     suffix: string;
+    // eslint-disable-next-line no-unused-vars
     validator?: (textToValidate: string) => void;
     style?: StyleProp<ViewStyle>;
 }
 
-const SuffixInput: React.FC<SuffixInput> = ({
+const SuffixInput: React.FC<SuffixInputProps> = ({
     title,
     suffix,
     validator = () => null,

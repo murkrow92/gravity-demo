@@ -19,7 +19,7 @@ const TradeScreen: React.FC = () => {
         return suffix ? detachSymbol(symbol, suffix) : ['', ''];
     }, [symbol, suffix]);
     const [isBuyMode, setIsBuyMode] = useState(true);
-    const [orderType, setOrderType] = useState('LIMIT');
+    const [orderType, setOrderType] = useState<'LIMIT' | 'MARKET'>('LIMIT');
     const [price, setPrice] = useState(paramPrice);
     const [amount, setAmount] = useState('');
     const [total, setTotal] = useState('');
@@ -55,7 +55,7 @@ const TradeScreen: React.FC = () => {
         // For now, we'll just show an alert
         Alert.alert(
             isBuyMode ? 'Confirm Buy Order' : 'Confirm Sell Order',
-            `Are you sure you want to ${isBuyMode ? 'buy' : 'sell'}?`,
+            `Are you sure you want to ${isBuyMode ? 'buy' : 'sell'} ${mainToken}?`,
             [
                 { text: 'Cancel', style: 'cancel' },
                 {
@@ -81,6 +81,49 @@ const TradeScreen: React.FC = () => {
     const resetInputs = () => {
         setAmount('');
         setTotal('');
+    };
+
+    const renderLimit = () => {
+        return (
+            orderType === 'LIMIT' && (
+                <>
+                    <SuffixInput
+                        title="Price"
+                        placeholder="0"
+                        placeholderTextColor={Theme.TEXT_COLOR_LIGHT}
+                        suffix={tokenToTrade}
+                        value={price}
+                        onChangeText={newPrice => {
+                            setPrice(newPrice);
+                            calculateTotal(newPrice, amount);
+                        }}
+                        keyboardType="numeric"
+                        validator={validateNumericInputs}
+                    />
+                    <SuffixInput
+                        title="Amount"
+                        placeholder="0"
+                        placeholderTextColor={Theme.TEXT_COLOR_LIGHT}
+                        suffix={tokenToTradeFor}
+                        value={amount}
+                        onChangeText={newAmount => {
+                            setAmount(newAmount);
+                            calculateTotal(price, newAmount);
+                        }}
+                        keyboardType="numeric"
+                        validator={validateNumericInputs}
+                    />
+                </>
+            )
+        );
+    };
+
+    const renderMarket = () => {
+        return (
+            orderType === 'MARKET' && (
+                <SuffixInput title="Price" suffix={tokenToTrade} value="Market" editable={false} />
+            )
+        );
     };
 
     return (
@@ -148,7 +191,10 @@ const TradeScreen: React.FC = () => {
                             bottom: 12,
                         }}
                         style={styles.subHeaderButton}
-                        onPress={() => setOrderType('MARKET')}
+                        onPress={() => {
+                            setOrderType('MARKET');
+                            setPrice(paramPrice);
+                        }}
                     >
                         <Text
                             style={[
@@ -161,38 +207,10 @@ const TradeScreen: React.FC = () => {
                     </TouchableOpacity>
                 </View>
                 <Text style={styles.balanceText}>
-                    Available balance {availableBalance.toFixed(2)} {tokenToTrade}
+                    Available balance {availableBalance.toFixed(8)} {tokenToTrade}
                 </Text>
-                {orderType === 'LIMIT' && (
-                    <>
-                        <SuffixInput
-                            title="Price"
-                            placeholder="0"
-                            placeholderTextColor={Theme.TEXT_COLOR_LIGHT}
-                            suffix={tokenToTrade}
-                            value={price}
-                            onChangeText={newPrice => {
-                                setPrice(newPrice);
-                                calculateTotal(newPrice, amount);
-                            }}
-                            keyboardType="numeric"
-                            validator={validateNumericInputs}
-                        />
-                        <SuffixInput
-                            title="Amount"
-                            placeholder="0"
-                            placeholderTextColor={Theme.TEXT_COLOR_LIGHT}
-                            suffix={tokenToTradeFor}
-                            value={amount}
-                            onChangeText={newAmount => {
-                                setAmount(newAmount);
-                                calculateTotal(price, newAmount);
-                            }}
-                            keyboardType="numeric"
-                            validator={validateNumericInputs}
-                        />
-                    </>
-                )}
+                {renderLimit()}
+                {renderMarket()}
                 <View style={styles.percentagesRow}>
                     {['25%', '50%', '75%', '100%'].map(percentage => (
                         <TouchableOpacity

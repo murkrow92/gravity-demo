@@ -62,7 +62,7 @@ const CurrencyList = (props: CurrencyListProps) => {
                     {suffix ? '/' : ''}
                     <Text style={{ color: Theme.TEXT_COLOR }}>{suffix}</Text>
                 </Text>
-                <Text style={{ color: Theme.TEXT_COLOR }}>${price}</Text>
+                <Text style={{ color: Theme.TEXT_COLOR }}>{price}</Text>
             </TouchableOpacity>
         );
     }, []);
