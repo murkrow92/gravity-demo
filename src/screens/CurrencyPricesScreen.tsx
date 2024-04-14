@@ -1,15 +1,13 @@
-import React, { memo, useCallback, useMemo, useRef } from 'react';
+import React, { memo, useMemo } from 'react';
 import {
-    FlatList,
     Pressable,
     StyleSheet,
     Text,
     TouchableOpacity,
     useWindowDimensions,
     View,
-    ViewToken,
 } from 'react-native';
-import { SceneMap, TabBar, TabView } from 'react-native-tab-view';
+import { TabBar, TabView } from 'react-native-tab-view';
 import Theme from '@theme';
 import { useQuery } from '@tanstack/react-query';
 import CurrencyModule from '@api/service/currency.ts';
@@ -17,6 +15,7 @@ import type { Currency } from '@api/service/type';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Spacing from '@components/Spacing.tsx';
 import { useNavigation } from '@react-navigation/native';
+import { FlashList } from '@shopify/flash-list';
 import { detachSymbol, filterBySuffix } from '../utils/symbolUtils.ts';
 
 interface CurrencyListProps {
@@ -64,7 +63,6 @@ const ListItem = memo(
 
 const CurrencyList = memo((props: CurrencyListProps) => {
     const { data, filter } = props;
-    const viewable = useRef(new Set());
 
     const filterData = useMemo(() => {
         if (data) {
@@ -73,22 +71,12 @@ const CurrencyList = memo((props: CurrencyListProps) => {
         return [];
     }, [data]);
 
-    const handleViewableItemsChanged = useCallback(
-        ({ viewableItems }: { viewableItems: ViewToken[] }) => {
-            viewable.current = new Set(viewableItems.map(item => item.item.symbol));
-        },
-        []
-    );
-
     return (
-        <FlatList
+        <FlashList
             data={filterData}
             renderItem={({ item }) => <ListItem item={item} filter={filter || ''} />}
             keyExtractor={item => item.symbol}
-            onViewableItemsChanged={handleViewableItemsChanged}
-            viewabilityConfig={{
-                itemVisiblePercentThreshold: 100,
-            }}
+            estimatedItemSize={40}
         />
     );
 });
@@ -97,6 +85,7 @@ const MyTabView = () => {
     const { data } = useQuery({
         queryKey: ['currencies'],
         queryFn: CurrencyModule.getCurrencies,
+        refetchInterval: 3000,
     });
     const layout = useWindowDimensions();
     const [index, setIndex] = React.useState(0);
@@ -113,6 +102,23 @@ const MyTabView = () => {
         return sortedData;
     }, [data, sortAsc]);
 
+    const renderScene = ({ route }: { route: { key: string } }) => {
+        switch (route.key) {
+            case 'usdt':
+                return <CurrencyList data={sortDataByPrice} filter="USDT" />;
+            case 'eth':
+                return <CurrencyList data={sortDataByPrice} filter="ETH" />;
+            case 'btc':
+                return <CurrencyList data={sortDataByPrice} filter="BTC" />;
+            case 'fdusd':
+                return <CurrencyList data={sortDataByPrice} filter="FDUSD" />;
+            case 'usdc':
+                return <CurrencyList data={sortDataByPrice} filter="USDC" />;
+            default:
+                return null; // Handle any other undefined tabs or default case
+        }
+    };
+
     return (
         <TabView
             style={{ backgroundColor: Theme.PRIMARY_BACKGROUND_COLOR }}
@@ -127,14 +133,7 @@ const MyTabView = () => {
                     { key: 'usdc', title: 'USDC' },
                 ],
             }}
-            renderScene={SceneMap({
-                // all: () => <CurrencyList data={sortDataByPrice} />,
-                usdt: () => <CurrencyList data={sortDataByPrice} filter="USDT" />,
-                eth: () => <CurrencyList data={sortDataByPrice} filter="ETH" />,
-                btc: () => <CurrencyList data={sortDataByPrice} filter="BTC" />,
-                fdusd: () => <CurrencyList data={sortDataByPrice} filter="FDUSD" />,
-                usdc: () => <CurrencyList data={sortDataByPrice} filter="USDC" />,
-            })}
+            renderScene={renderScene}
             lazy
             onIndexChange={setIndex}
             initialLayout={{ width: layout.width }}
