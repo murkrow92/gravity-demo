@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { View, StyleSheet, Text, Alert, TouchableOpacity, ScrollView } from 'react-native';
 import Theme from '@theme';
 import { Font } from '@theme/font.ts';
-import { useRoute } from '@react-navigation/native';
+import { StackActions, useNavigation, useRoute } from '@react-navigation/native';
 import { availableBalances } from '../mocks/balance.ts';
 import { RootStackParamList } from '@typing/navigation';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -10,11 +10,13 @@ import { detachSymbol } from '../utils/symbolUtils.ts';
 import PrimaryButton from '@components/PrimaryButton';
 import SuffixInput from '@components/SuffixInput';
 import { formatDecimalNumber } from '../utils/numberUtils.ts';
+import ConfirmTradeModal from '@components/ConfirmTradeModal';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Trade'>;
 
 const TradeScreen: React.FC = () => {
     const { params } = useRoute<Props['route']>();
+    const navigation = useNavigation();
     const { symbol, suffix, price: paramPrice = '' } = params;
     const [mainToken, tokenToCompare] = useMemo(() => {
         return suffix ? detachSymbol(symbol, suffix) : ['', ''];
@@ -24,6 +26,7 @@ const TradeScreen: React.FC = () => {
     const [price, setPrice] = useState(paramPrice);
     const [amount, setAmount] = useState('');
     const [total, setTotal] = useState('');
+    const [confirmModalVisible, setConfirmModalVisible] = useState(false);
 
     const tokenToTrade = isBuyMode ? tokenToCompare : mainToken;
     const tokenToTradeFor = isBuyMode ? mainToken : tokenToCompare;
@@ -251,6 +254,15 @@ const TradeScreen: React.FC = () => {
                 buttonStyle={{ backgroundColor: isBuyMode ? Theme.PRIMARY : Theme.WARNING }}
                 title={`${isBuyMode ? 'Buy' : 'Sell'} ${mainToken}`}
                 onPress={handleOrderConfirmation}
+            />
+            <ConfirmTradeModal
+                isVisible={confirmModalVisible}
+                onConfirm={() => {
+                    navigation.dispatch(StackActions.replace('CurrencyPrices'));
+                }}
+                onCancel={() => {
+                    setConfirmModalVisible(false);
+                }}
             />
         </View>
     );
