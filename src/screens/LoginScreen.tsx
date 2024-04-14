@@ -16,12 +16,15 @@ import { Font } from '@theme/font';
 function WelcomeText() {
     return (
         <View style={styles.form}>
-            <Text style={{ color: Theme.TEXT_COLOR, fontSize: 14, textAlign: 'center' }}>
-                Welcome, please sign in to access your account
-            </Text>
+            <Text style={styles.welcome}>Please sign in to access your account</Text>
         </View>
     );
 }
+
+const TestAccount = {
+    username: 'kminchelle',
+    password: '0lelplR',
+};
 
 function LoginScreen() {
     const authContext = useContext(AuthContext);
@@ -39,8 +42,8 @@ function LoginScreen() {
             setLoading(true);
         },
     });
-    const [username, setUsername] = useState('kminchelle'); // kminchelle
-    const [password, setPassword] = useState('0lelplR'); // 0lelplR
+    const [username, setUsername] = useState(TestAccount.username);
+    const [password, setPassword] = useState(TestAccount.password);
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
@@ -93,6 +96,7 @@ function LoginScreen() {
                     <Spacing size={32} direction="vertical" />
                     <View style={styles.form}>
                         <FloatingLabelInput
+                            placeholder={TestAccount.username}
                             label="Username"
                             value={username}
                             onChangeText={setUsername}
@@ -100,6 +104,7 @@ function LoginScreen() {
                         />
                         <Spacing size={16} direction="vertical" />
                         <FloatingLabelInput
+                            placeholder={TestAccount.password}
                             label="Password"
                             value={password}
                             secureTextEntry={!showPassword}
@@ -109,12 +114,14 @@ function LoginScreen() {
                             error={errorPassword}
                         />
                         <Spacing size={4} direction="vertical" />
-                        {errorMessage ? (
-                            <Animated.View style={[animatedStyles, styles.errorContainer]}>
-                                <FontAwesome name="close" size={24} color="#D32F2F" />
-                                <Text style={styles.errorText}>{errorMessage}</Text>
-                            </Animated.View>
-                        ) : null}
+                        <Animated.View style={[animatedStyles, styles.errorContainer]}>
+                            <FontAwesome name="close" size={24} color="#D32F2F" />
+                            <Text
+                                style={[styles.errorText, errorMessage ? null : styles.invisible]}
+                            >
+                                {errorMessage}
+                            </Text>
+                        </Animated.View>
                         <Spacing size={8} direction="vertical" />
                         <PrimaryButton
                             title="Login"
@@ -155,12 +162,16 @@ const styles = StyleSheet.create({
     errorText: {
         marginLeft: 10,
         color: '#D32F2F',
-        fontSize: 16,
+        fontSize: 12,
+        fontFamily: Font.IBM.medium,
+    },
+    invisible: {
+        color: 'transparent',
     },
     welcome: {
         color: Theme.WHITE,
         fontSize: 14,
-        fontFamily: Font.IBM.medium,
+        fontFamily: Font.IBM.regular,
         textAlign: 'center',
     },
 });
