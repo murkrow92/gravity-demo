@@ -38,6 +38,7 @@ module.exports = {
         'react/function-component-definition': ['off'],
         'react/require-default-props': ['off'],
         'global-require': ['off'],
+        'import/prefer-default-export': ['off'],
     },
     settings: {
         react: {

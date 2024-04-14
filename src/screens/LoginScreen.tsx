@@ -1,5 +1,13 @@
-import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { Image, KeyboardAvoidingView, ScrollView, StyleSheet, Text, View } from 'react-native';
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import {
+    Image,
+    KeyboardAvoidingView,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    View,
+} from 'react-native';
 import Spacing from '@components/Spacing.tsx';
 import FloatingLabelInput from '@components/FloatingLabelInput';
 import PrimaryButton from '@components/PrimaryButton';
@@ -11,6 +19,20 @@ import { AuthContext } from '@navigation/RootNavigation.tsx';
 import LoadingModal from '@components/Modal/LoadingModal';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
+import { Font } from '@theme/font';
+
+function WelcomeText() {
+    return (
+        <View style={styles.form}>
+            <Text style={styles.welcome}>Please sign in to access your account</Text>
+        </View>
+    );
+}
+
+const TestAccount = {
+    username: 'kminchelle',
+    password: '0lelplR',
+};
 
 function LoginScreen() {
     const authContext = useContext(AuthContext);
@@ -28,13 +50,14 @@ function LoginScreen() {
             setLoading(true);
         },
     });
-    const [username, setUsername] = useState('kminchelle'); // kminchelle
-    const [password, setPassword] = useState('0lelplR'); // 0lelplR
+    const [username, setUsername] = useState(TestAccount.username);
+    const [password, setPassword] = useState(TestAccount.password);
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const mounted = useRef(false);
     const opacity = useSharedValue(0);
+    const passwordInputRef = useRef<TextInput>();
 
     useEffect(() => {
         mounted.current = true;
@@ -68,33 +91,44 @@ function LoginScreen() {
         return '';
     }, [password]);
 
+    const onUsernameSubmit = useCallback(() => {
+        passwordInputRef?.current?.focus();
+    }, []);
+
+    const onPasswordSubmit = useCallback(() => {
+        mutate({ username, password });
+    }, [username, password]);
+
     return (
-        <SafeAreaView edges={['bottom']} style={styles.container}>
-            <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" enabled>
+        <SafeAreaView edges={['bottom', 'top']} style={styles.container}>
+            <KeyboardAvoidingView
+                style={{ flex: 1 }}
+                keyboardVerticalOffset={80}
+                behavior="padding"
+                enabled
+            >
                 <ScrollView scrollEnabled={false}>
                     <Spacing size={32} direction="vertical" />
                     <Image
-                        source={require('../assets/images/login_image.png')}
-                        style={{ height: 160 }}
+                        source={require('../assets/images/logo-light.png')}
+                        style={styles.logo}
                     />
                     <Spacing size={32} direction="vertical" />
-                    <View style={styles.form}>
-                        <Text
-                            style={{ color: Theme.TEXT_COLOR, fontSize: 22, textAlign: 'center' }}
-                        >
-                            Welcome, please sign in to access your account
-                        </Text>
-                    </View>
+                    <WelcomeText />
                     <Spacing size={32} direction="vertical" />
                     <View style={styles.form}>
                         <FloatingLabelInput
+                            placeholder={TestAccount.username}
                             label="Username"
                             value={username}
                             onChangeText={setUsername}
                             error={errorUserName}
+                            onSubmitEditing={onUsernameSubmit}
                         />
                         <Spacing size={16} direction="vertical" />
                         <FloatingLabelInput
+                            ref={passwordInputRef}
+                            placeholder={TestAccount.password}
                             label="Password"
                             value={password}
                             secureTextEntry={!showPassword}
@@ -102,14 +136,17 @@ function LoginScreen() {
                             icon={showPassword ? 'eye-slash' : 'eye'}
                             onIconPress={() => setShowPassword(!showPassword)}
                             error={errorPassword}
+                            onSubmitEditing={onPasswordSubmit}
                         />
                         <Spacing size={4} direction="vertical" />
-                        {errorMessage ? (
-                            <Animated.View style={[animatedStyles, styles.errorContainer]}>
-                                <FontAwesome name="close" size={24} color="#D32F2F" />
-                                <Text style={styles.errorText}>{errorMessage}</Text>
-                            </Animated.View>
-                        ) : null}
+                        <Animated.View style={[animatedStyles, styles.errorContainer]}>
+                            <FontAwesome name="close" size={24} color="#D32F2F" />
+                            <Text
+                                style={[styles.errorText, errorMessage ? null : styles.invisible]}
+                            >
+                                {errorMessage}
+                            </Text>
+                        </Animated.View>
                         <Spacing size={8} direction="vertical" />
                         <PrimaryButton
                             title="Login"
@@ -126,9 +163,15 @@ function LoginScreen() {
 }
 
 const styles = StyleSheet.create({
+    logo: {
+        height: 50,
+        aspectRatio: 4.3,
+        alignSelf: 'center',
+    },
     container: {
         flex: 1,
         alignItems: 'center',
+        backgroundColor: '#2C3849',
     },
     form: {
         paddingHorizontal: 16,
@@ -144,7 +187,17 @@ const styles = StyleSheet.create({
     errorText: {
         marginLeft: 10,
         color: '#D32F2F',
-        fontSize: 16,
+        fontSize: 12,
+        fontFamily: Font.IBM.medium,
+    },
+    invisible: {
+        color: 'transparent',
+    },
+    welcome: {
+        color: Theme.WHITE,
+        fontSize: 14,
+        fontFamily: Font.IBM.regular,
+        textAlign: 'center',
     },
 });
 

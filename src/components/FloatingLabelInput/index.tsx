@@ -1,5 +1,5 @@
-import React, { useCallback, useState, useEffect } from 'react';
-import { TextInput, StyleSheet, TextInputProps, Pressable } from 'react-native';
+import React, { useCallback, useState, useEffect, forwardRef } from 'react';
+import { TextInput, StyleSheet, TextInputProps, Pressable, Text } from 'react-native';
 import Animated, {
     Easing,
     useAnimatedStyle,
@@ -9,6 +9,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import Theme from '@theme';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { Font } from '@theme/font';
 
 interface FloatingLabelInputProps extends TextInputProps {
     label: string;
@@ -17,7 +18,7 @@ interface FloatingLabelInputProps extends TextInputProps {
     onIconPress?: () => void;
 }
 
-const FloatingLabelInput = (props: FloatingLabelInputProps) => {
+const FloatingLabelInput = forwardRef((props: FloatingLabelInputProps, ref) => {
     const { label, value, icon, onIconPress, error } = props;
     const [isFocused, setIsFocused] = useState(false);
     const labelPosition = useSharedValue(0);
@@ -30,7 +31,7 @@ const FloatingLabelInput = (props: FloatingLabelInputProps) => {
             duration: isFocused ? 500 : 200,
             easing: Easing.out(Easing.ease),
         });
-        borderWidth.value = withTiming(isFocused || error ? 2 : 0, {
+        borderWidth.value = withTiming(isFocused || error ? 2 : 0.5, {
             duration: 300,
         });
         borderColor.value = withTiming(error ? Theme.TEXT_INPUT_ERROR_COLOR : Theme.PRIMARY, {
@@ -50,24 +51,16 @@ const FloatingLabelInput = (props: FloatingLabelInputProps) => {
         setIsFocused(focusState);
     }, []);
 
-    const labelStyle = useAnimatedStyle(() => ({
-        position: 'absolute',
-        left: 12,
-        top: labelPosition.value === 0 ? 14 : -22,
-        fontSize: labelPosition.value === 0 ? 16 : 14,
-        color: labelPosition.value === 0 ? '#aaa' : '#000',
-    }));
-
     const containerStyle = useAnimatedStyle(() => ({
         padding: 8,
         marginTop: 4,
         width: '100%',
         flexDirection: 'row',
-        justifyContent: 'space-between',
+        justifyContent: 'flex-start',
         alignItems: 'center',
-        backgroundColor: Theme.PRIMARY_BACKGROUND_COLOR,
         borderColor: borderColor.value,
         borderWidth: borderWidth.value,
+        backgroundColor: 'transparent',
         borderRadius: 8,
     }));
 
@@ -82,9 +75,11 @@ const FloatingLabelInput = (props: FloatingLabelInputProps) => {
 
     return (
         <>
-            <Animated.View style={containerStyle}>
-                <Animated.Text style={labelStyle}>{label}</Animated.Text>
+            <Text style={styles.label}>{label}</Text>
+            <Animated.View style={[containerStyle]}>
                 <TextInput
+                    ref={ref}
+                    placeholderTextColor={Theme.SECONDARY_TEXT_COLOR}
                     value={value}
                     {...props}
                     style={styles.input}
@@ -100,14 +95,23 @@ const FloatingLabelInput = (props: FloatingLabelInputProps) => {
             <Animated.Text style={errorStyle}>{error}</Animated.Text>
         </>
     );
-};
+});
 
 const styles = StyleSheet.create({
+    border: {
+        borderColor: Theme.PRIMARY,
+    },
     input: {
         height: 40,
-        fontSize: 16,
-        color: '#000',
+        fontSize: 14,
+        color: Theme.TEXT_COLOR,
         width: '100%',
+        fontFamily: Font.IBM.medium,
+    },
+    label: {
+        color: Theme.WHITE,
+        fontSize: 10,
+        fontFamily: Font.IBM.regular,
     },
     icon: {
         padding: 10,
