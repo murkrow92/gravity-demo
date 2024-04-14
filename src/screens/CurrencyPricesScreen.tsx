@@ -1,10 +1,18 @@
 import React, { useMemo } from 'react';
-import { FlatList, Text, StyleSheet, useWindowDimensions, View } from 'react-native';
+import {
+    FlatList,
+    Text,
+    StyleSheet,
+    useWindowDimensions,
+    View,
+    TouchableOpacity,
+} from 'react-native';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import Theme from '@theme';
 import { useQuery } from '@tanstack/react-query';
 import CurrencyModule from '@api/service/currency.ts';
 import type { Currency } from '@api/service/type';
+import { useNavigation } from '@react-navigation/native';
 
 interface CurrencyListProps {
     data: Currency[];
@@ -15,12 +23,18 @@ function filterBySuffix(data: Currency[], suffix: string): Currency[] {
 }
 
 const FirstRoute = (props: CurrencyListProps) => {
+    const navigation = useNavigation();
     const { data } = props;
     return (
         <FlatList
             data={data}
             renderItem={({ item }) => (
-                <View
+                <TouchableOpacity
+                    onPress={() => {
+                        navigation.navigate('Trade', {
+                            currency: item,
+                        });
+                    }}
                     style={{
                         width: '100%',
                         flexDirection: 'row',
@@ -32,7 +46,7 @@ const FirstRoute = (props: CurrencyListProps) => {
                 >
                     <Text style={{ color: Theme.TEXT_COLOR }}>{item.symbol}</Text>
                     <Text style={{ color: Theme.TEXT_COLOR }}>${item.price}</Text>
-                </View>
+                </TouchableOpacity>
             )}
             keyExtractor={item => item.symbol}
         />

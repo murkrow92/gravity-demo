@@ -2,6 +2,7 @@ import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import LoginScreen from '@screens/LoginScreen.tsx';
 import CurrencyPriceScreen from '@screens/CurrencyPricesScreen.tsx';
+import TradeScreen from '@screens/TradeScreen.tsx';
 import type { RootStackParamList } from '@typing/navigation';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -97,7 +98,10 @@ function RootNavigation() {
                         component={LoginScreen}
                     />
                 ) : (
-                    <RootStack.Screen name="CurrencyPrices" component={CurrencyPriceScreen} />
+                    <>
+                        <RootStack.Screen name="CurrencyPrices" component={CurrencyPriceScreen} />
+                        <RootStack.Screen name="Trade" component={TradeScreen} />
+                    </>
                 )}
             </RootStack.Navigator>
         </AuthContext.Provider>
