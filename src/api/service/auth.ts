@@ -1,4 +1,4 @@
-import api from '@api/axios.ts';
+import { POST } from '@api/axios.ts';
 import type { User } from './type.d.ts';
 
 export interface LoginParams {
@@ -7,7 +7,7 @@ export interface LoginParams {
 }
 
 const login = async (params: LoginParams) => {
-    const { data } = await api.post<User>(
+    const { data } = await POST<User>(
         '/auth/login',
         {
             ...params,
