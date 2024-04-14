@@ -8,6 +8,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Pressable } from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Theme from '@theme';
+import { Font } from '@theme/font.ts';
 
 const RootStack = createNativeStackNavigator<RootStackParamList>();
 export const AuthContext = React.createContext({
@@ -93,7 +94,17 @@ function RootNavigation() {
 
     return (
         <AuthContext.Provider value={authContext}>
-            <RootStack.Navigator>
+            <RootStack.Navigator
+                screenOptions={{
+                    headerStyle: {
+                        backgroundColor: Theme.PRIMARY_BACKGROUND_COLOR,
+                    },
+                    headerTintColor: Theme.TEXT_COLOR_LIGHT,
+                    headerTitleStyle: {
+                        fontFamily: Font.IBM.regular,
+                    },
+                }}
+            >
                 {state.userToken == null ? (
                     <RootStack.Screen
                         name="Login"

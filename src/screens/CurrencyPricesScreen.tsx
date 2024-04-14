@@ -1,5 +1,13 @@
 import React, { useCallback, useMemo } from 'react';
-import { FlatList, Text, StyleSheet, useWindowDimensions, View, Pressable } from 'react-native';
+import {
+    FlatList,
+    Text,
+    StyleSheet,
+    useWindowDimensions,
+    View,
+    Pressable,
+    TouchableOpacity,
+} from 'react-native';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import Theme from '@theme';
 import { useQuery } from '@tanstack/react-query';
@@ -7,6 +15,7 @@ import CurrencyModule from '@api/service/currency.ts';
 import type { Currency } from '@api/service/type';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Spacing from '@components/Spacing.tsx';
+import { useNavigation } from '@react-navigation/native';
 
 interface CurrencyListProps {
     data: Currency[];
@@ -27,6 +36,7 @@ function detachSymbol(symbol: string, suffix: string): string[] {
 
 const CurrencyList = (props: CurrencyListProps) => {
     const { data, filter } = props;
+    const navigation = useNavigation();
 
     const filterData = useMemo(() => {
         if (data) {
@@ -39,7 +49,7 @@ const CurrencyList = (props: CurrencyListProps) => {
     const itemRender = useCallback(({ item }: { item: Currency }) => {
         const [firstPart, suffix] = detachSymbol(item.symbol, filter || '');
         return (
-            <View
+            <TouchableOpacity
                 style={{
                     width: '100%',
                     flexDirection: 'row',
@@ -48,6 +58,12 @@ const CurrencyList = (props: CurrencyListProps) => {
                     justifyContent: 'space-between',
                     paddingHorizontal: 16,
                 }}
+                activeOpacity={1}
+                onPress={() => {
+                    navigation.navigate('Trade', {
+                        currency: item,
+                    });
+                }}
             >
                 <Text style={{ color: Theme.TEXT_COLOR }}>
                     {firstPart}
@@ -55,7 +71,7 @@ const CurrencyList = (props: CurrencyListProps) => {
                     <Text style={{ color: Theme.TEXT_COLOR }}>{suffix}</Text>
                 </Text>
                 <Text style={{ color: Theme.TEXT_COLOR }}>${item.price}</Text>
-            </View>
+            </TouchableOpacity>
         );
     }, []);
 
@@ -86,6 +102,7 @@ const MyTabView = () => {
 
     return (
         <TabView
+            style={{ backgroundColor: Theme.PRIMARY_BACKGROUND_COLOR }}
             navigationState={{
                 index,
                 routes: [
@@ -113,7 +130,10 @@ const MyTabView = () => {
                         {...props}
                         indicatorStyle={styles.tabIndicator}
                         labelStyle={styles.tabLabel}
-                        style={{ backgroundColor: 'white', shadowColor: '#fff' }}
+                        style={{
+                            backgroundColor: Theme.PRIMARY_BACKGROUND_COLOR,
+                            shadowColor: '#fff',
+                        }}
                         scrollEnabled
                         tabStyle={{ width: 80 }}
                         renderLabel={({ route, focused }) => (
