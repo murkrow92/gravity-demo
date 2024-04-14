@@ -6,8 +6,15 @@ export interface LoginParams {
     password: string;
 }
 
+function wait(ms: number): Promise<void> {
+    return new Promise(resolve => {
+        setTimeout(resolve, ms);
+    });
+}
+
 const login = async (params: LoginParams) => {
-    const { data } = await POST<User>(
+    await wait(1000);
+    const { data } = (await POST(
         '/auth/login',
         {
             ...params,
@@ -16,7 +23,7 @@ const login = async (params: LoginParams) => {
         {
             baseURL: 'https://dummyjson.com',
         }
-    );
+    )) as { data: User };
     return data;
 };
 

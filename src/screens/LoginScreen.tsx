@@ -1,29 +1,40 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { Image, KeyboardAvoidingView, ScrollView, StyleSheet, Text, View } from 'react-native';
 import Spacing from '@components/Spacing.tsx';
 import FloatingLabelInput from '@components/FloatingLabelInput';
 import PrimaryButton from '@components/PrimaryButton';
-import { useNavigation } from '@react-navigation/native';
 import { useMutation } from '@tanstack/react-query';
 import Auth from '@api/service/auth.ts';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Theme from '@theme';
+import { AuthContext } from '@navigation/RootNavigation.tsx';
+import LoadingModal from '@components/Modal/LoadingModal';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 
 function LoginScreen() {
-    const navigation = useNavigation();
+    const authContext = useContext(AuthContext);
     const { mutate } = useMutation({
         mutationFn: Auth.login,
-        onSuccess: () => {
-            navigation.navigate('CurrencyPrices');
+        onSuccess: data => {
+            setLoading(false);
+            authContext.signIn(data.token);
         },
-        onError: error => {
-            console.log('error', error);
+        onError: () => {
+            setLoading(false);
+            setErrorMessage('Invalid username or password');
+        },
+        onMutate: () => {
+            setLoading(true);
         },
     });
-    const [username, setUsername] = useState(''); // kminchelle
-    const [password, setPassword] = useState(''); // 0lelplR
+    const [username, setUsername] = useState('kminchelle'); // kminchelle
+    const [password, setPassword] = useState('0lelplR'); // 0lelplR
     const [showPassword, setShowPassword] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
     const mounted = useRef(false);
+    const opacity = useSharedValue(0);
 
     useEffect(() => {
         mounted.current = true;
@@ -31,6 +42,17 @@ function LoginScreen() {
             mounted.current = false;
         };
     }, []);
+
+    useEffect(() => {
+        opacity.value = errorMessage ? 1 : 0;
+    }, [errorMessage]);
+
+    const animatedStyles = useAnimatedStyle(() => {
+        return {
+            opacity: opacity.value,
+            transform: [{ scale: withSpring(opacity.value) }],
+        };
+    });
 
     const errorUserName = useMemo(() => {
         if (username === '' && mounted.current) {
@@ -81,7 +103,14 @@ function LoginScreen() {
                             onIconPress={() => setShowPassword(!showPassword)}
                             error={errorPassword}
                         />
-                        <Spacing size={16} direction="vertical" />
+                        <Spacing size={4} direction="vertical" />
+                        {errorMessage ? (
+                            <Animated.View style={[animatedStyles, styles.errorContainer]}>
+                                <FontAwesome name="close" size={24} color="#D32F2F" />
+                                <Text style={styles.errorText}>{errorMessage}</Text>
+                            </Animated.View>
+                        ) : null}
+                        <Spacing size={8} direction="vertical" />
                         <PrimaryButton
                             title="Login"
                             onPress={() => {
@@ -91,6 +120,7 @@ function LoginScreen() {
                     </View>
                 </ScrollView>
             </KeyboardAvoidingView>
+            <LoadingModal title="Login in..." color={Theme.PRIMARY} modalVisible={loading} />
         </SafeAreaView>
     );
 }
@@ -103,6 +133,18 @@ const styles = StyleSheet.create({
     form: {
         paddingHorizontal: 16,
         width: '100%',
+    },
+    errorContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#FFCDD2',
+        padding: 10,
+        borderRadius: 5,
+    },
+    errorText: {
+        marginLeft: 10,
+        color: '#D32F2F',
+        fontSize: 16,
     },
 });
 
