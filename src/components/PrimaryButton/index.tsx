@@ -23,12 +23,14 @@ const PrimaryButton = ({ title, pressedStyle, buttonStyle, ...props }: PrimaryBu
 const styles = StyleSheet.create({
     button: {
         padding: 12,
-        borderRadius: 5,
+        borderRadius: 10,
         backgroundColor: Theme.PRIMARY,
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     text: {
         fontFamily: Font.IBM.bold,
-        color: Theme.TEXT_COLOR,
+        color: Theme.TEXT_COLOR_DARK,
         fontSize: 16,
         textAlign: 'center',
     },

@@ -4,7 +4,8 @@ export type RootStackParamList = {
     Login: undefined;
     CurrencyPrices: undefined;
     Trade: {
-        currency: Currency;
+        symbol: string;
+        suffix?: string;
     };
 };
 

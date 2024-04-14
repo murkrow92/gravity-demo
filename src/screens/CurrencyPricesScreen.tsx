@@ -16,22 +16,11 @@ import type { Currency } from '@api/service/type';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Spacing from '@components/Spacing.tsx';
 import { useNavigation } from '@react-navigation/native';
+import { detachSymbol, filterBySuffix } from '../utils/symbolUtils.ts';
 
 interface CurrencyListProps {
     data: Currency[];
     filter?: string;
-}
-
-function filterBySuffix(data: Currency[], suffix: string): Currency[] {
-    return data.filter(item => item.symbol.endsWith(suffix));
-}
-
-function detachSymbol(symbol: string, suffix: string): string[] {
-    if (symbol.endsWith(suffix)) {
-        const firstPart = symbol.substring(0, symbol.length - suffix.length);
-        return [firstPart, suffix];
-    }
-    return [];
 }
 
 const CurrencyList = (props: CurrencyListProps) => {
@@ -47,6 +36,7 @@ const CurrencyList = (props: CurrencyListProps) => {
 
     // eslint-disable-next-line react/no-unused-prop-types
     const itemRender = useCallback(({ item }: { item: Currency }) => {
+        const { symbol } = item;
         const [firstPart, suffix] = detachSymbol(item.symbol, filter || '');
         return (
             <TouchableOpacity
@@ -61,7 +51,8 @@ const CurrencyList = (props: CurrencyListProps) => {
                 activeOpacity={1}
                 onPress={() => {
                     navigation.navigate('Trade', {
-                        currency: item,
+                        symbol,
+                        suffix,
                     });
                 }}
             >

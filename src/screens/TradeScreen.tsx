@@ -1,10 +1,31 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, Text, Alert, TextInput, TouchableOpacity } from 'react-native';
+import React, { useMemo, useState } from 'react';
+import {
+    View,
+    StyleSheet,
+    Text,
+    Alert,
+    TextInput,
+    TouchableOpacity,
+    ScrollView,
+} from 'react-native';
 import Theme from '@theme';
 import { Font } from '@theme/font.ts';
+import { useRoute } from '@react-navigation/native';
+import { availableBalances } from '../mocks/balance.ts';
+import { RootStackParamList } from '@typing/navigation';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { detachSymbol } from '../utils/symbolUtils.ts';
+import PrimaryButton from '@components/PrimaryButton';
+
+type Props = NativeStackScreenProps<RootStackParamList, 'Trade'>;
 
 const TradeScreen: React.FC = () => {
-    const availableBalance = 1000000;
+    const { params } = useRoute<Props['route']>();
+    const { symbol, suffix } = params;
+    const tokenPair = useMemo(() => {
+        return suffix ? detachSymbol(symbol, suffix) : [];
+    }, [symbol, suffix]);
+    const availableBalance = availableBalances[suffix || '']?.tokenBalance || 0;
     const [isBuyMode, setIsBuyMode] = useState(true);
     const [orderType, setOrderType] = useState('LIMIT');
     const [price, setPrice] = useState('');
@@ -14,7 +35,7 @@ const TradeScreen: React.FC = () => {
     const calculateTotal = (newPrice: string, newAmount: string) => {
         const numericPrice = parseFloat(newPrice);
         const numericAmount = parseFloat(newAmount);
-        if (!isNaN(numericPrice) && !isNaN(numericAmount)) {
+        if (!Number.isNaN(numericPrice) && !Number.isNaN(numericAmount)) {
             setTotal((numericPrice * numericAmount).toString());
         }
     };
@@ -22,7 +43,7 @@ const TradeScreen: React.FC = () => {
     const calculateAmount = (newTotal: string) => {
         const numericPrice = parseFloat(price);
         const numericTotal = parseFloat(newTotal);
-        if (!isNaN(numericPrice) && numericPrice > 0) {
+        if (!Number.isNaN(numericPrice) && numericPrice > 0) {
             setAmount((numericTotal / numericPrice).toString());
         }
     };
@@ -54,100 +75,129 @@ const TradeScreen: React.FC = () => {
 
     return (
         <View style={styles.container}>
-            <View style={styles.buttonGroup}>
-                <TouchableOpacity
-                    style={[styles.headerButton, isBuyMode && styles.buyButton]}
-                    onPress={() => setIsBuyMode(true)}
-                >
-                    <Text
-                        style={[
-                            styles.headerButtonText,
-                            isBuyMode && styles.headerButtonTextActive,
-                        ]}
-                    >
-                        BUY
-                    </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    style={[styles.headerButton, !isBuyMode && styles.sellButton]}
-                    onPress={() => setIsBuyMode(false)}
-                >
-                    <Text
-                        style={[
-                            styles.headerButtonText,
-                            !isBuyMode && styles.headerButtonTextActive,
-                        ]}
-                    >
-                        SELL
-                    </Text>
-                </TouchableOpacity>
-            </View>
-            <View style={styles.buttonGroup}>
-                <TouchableOpacity
-                    style={orderType === 'LIMIT' ? styles.buyButton : styles.sellButton}
-                    onPress={() => setOrderType('LIMIT')}
-                >
-                    <Text>Limit</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    style={orderType === 'MARKET' ? styles.buyButton : styles.sellButton}
-                    onPress={() => setOrderType('MARKET')}
-                >
-                    <Text>Market</Text>
-                </TouchableOpacity>
-            </View>
-            <Text style={styles.balanceText}>
-                Available balance {availableBalance.toFixed(2)} USDT
-            </Text>
-            {orderType === 'LIMIT' && (
-                <>
-                    <TextInput
-                        style={styles.input}
-                        value={price}
-                        onChangeText={newPrice => {
-                            setPrice(newPrice);
-                            calculateTotal(newPrice, amount);
-                        }}
-                        placeholder="Price"
-                        keyboardType="numeric"
-                    />
-                    <TextInput
-                        style={styles.input}
-                        value={amount}
-                        onChangeText={newAmount => {
-                            setAmount(newAmount);
-                            calculateTotal(price, newAmount);
-                        }}
-                        placeholder="Amount"
-                        keyboardType="numeric"
-                    />
-                </>
-            )}
-            <View style={styles.percentagesRow}>
-                {['25%', '50%', '75%', '100%'].map(percentage => (
+            <ScrollView>
+                <View style={styles.buttonGroup}>
                     <TouchableOpacity
-                        key={percentage}
-                        onPress={() => handlePercentagePress(parseFloat(percentage) / 100)}
+                        style={[styles.headerButton, isBuyMode && styles.buyButton]}
+                        onPress={() => setIsBuyMode(true)}
                     >
-                        <Text>{percentage}</Text>
+                        <Text
+                            style={[
+                                styles.headerButtonText,
+                                isBuyMode && styles.headerButtonTextActive,
+                            ]}
+                        >
+                            BUY
+                        </Text>
                     </TouchableOpacity>
-                ))}
-            </View>
-            <TextInput
-                style={styles.input}
-                value={total}
-                onChangeText={newTotal => {
-                    setTotal(newTotal);
-                    if (orderType === 'LIMIT') {
-                        calculateAmount(newTotal);
-                    }
-                }}
-                placeholder="Total"
-                keyboardType="numeric"
+                    <TouchableOpacity
+                        style={[styles.headerButton, !isBuyMode && styles.sellButton]}
+                        onPress={() => setIsBuyMode(false)}
+                    >
+                        <Text
+                            style={[
+                                styles.headerButtonText,
+                                !isBuyMode && styles.headerButtonTextActive,
+                            ]}
+                        >
+                            SELL
+                        </Text>
+                    </TouchableOpacity>
+                </View>
+                <View style={styles.subHeaderButtonContainer}>
+                    <TouchableOpacity
+                        style={styles.subHeaderButton}
+                        onPress={() => setOrderType('LIMIT')}
+                        hitSlop={{
+                            left: 12,
+                            right: 12,
+                            top: 12,
+                            bottom: 12,
+                        }}
+                    >
+                        <Text
+                            style={[
+                                styles.subHeaderButtonText,
+                                orderType === 'LIMIT' && styles.subHeaderButtonTextActive,
+                            ]}
+                        >
+                            Limit
+                        </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        hitSlop={{
+                            left: 12,
+                            right: 12,
+                            top: 12,
+                            bottom: 12,
+                        }}
+                        style={styles.subHeaderButton}
+                        onPress={() => setOrderType('MARKET')}
+                    >
+                        <Text
+                            style={[
+                                styles.subHeaderButtonText,
+                                orderType === 'MARKET' && styles.subHeaderButtonTextActive,
+                            ]}
+                        >
+                            Market
+                        </Text>
+                    </TouchableOpacity>
+                </View>
+                <Text style={styles.balanceText}>
+                    Available balance {availableBalance.toFixed(2)} {suffix}
+                </Text>
+                {orderType === 'LIMIT' && (
+                    <>
+                        <TextInput
+                            style={styles.input}
+                            value={price}
+                            onChangeText={newPrice => {
+                                setPrice(newPrice);
+                                calculateTotal(newPrice, amount);
+                            }}
+                            placeholder="Price"
+                            keyboardType="numeric"
+                        />
+                        <TextInput
+                            style={styles.input}
+                            value={amount}
+                            onChangeText={newAmount => {
+                                setAmount(newAmount);
+                                calculateTotal(price, newAmount);
+                            }}
+                            placeholder="Amount"
+                            keyboardType="numeric"
+                        />
+                    </>
+                )}
+                <View style={styles.percentagesRow}>
+                    {['25%', '50%', '75%', '100%'].map(percentage => (
+                        <TouchableOpacity
+                            key={percentage}
+                            onPress={() => handlePercentagePress(parseFloat(percentage) / 100)}
+                        >
+                            <Text>{percentage}</Text>
+                        </TouchableOpacity>
+                    ))}
+                </View>
+                <TextInput
+                    style={styles.input}
+                    value={total}
+                    onChangeText={newTotal => {
+                        setTotal(newTotal);
+                        if (orderType === 'LIMIT') {
+                            calculateAmount(newTotal);
+                        }
+                    }}
+                    placeholder="Total"
+                    keyboardType="numeric"
+                />
+            </ScrollView>
+            <PrimaryButton
+                title={`${isBuyMode ? 'Buy' : 'Sell'} ${tokenPair[0] || ''}`}
+                onPress={handleOrderConfirmation}
             />
-            <TouchableOpacity style={styles.confirmButton} onPress={handleOrderConfirmation}>
-                <Text>{`${isBuyMode ? 'Buy' : 'Sell'} DOGE`}</Text>
-            </TouchableOpacity>
         </View>
     );
 };
@@ -182,6 +232,7 @@ const styles = StyleSheet.create({
     headerButtonText: {
         fontSize: 14,
         fontFamily: Font.IBM.bold,
+        fontWeight: 'bold',
         color: Theme.TEXT_COLOR_LIGHT,
     },
     headerButtonTextActive: {
@@ -201,12 +252,25 @@ const styles = StyleSheet.create({
     percentagesRow: {
         flexDirection: 'row',
         justifyContent: 'space-around',
-        marginVertical: 10,
     },
     confirmButton: {
         backgroundColor: '#00ff00',
         paddingVertical: 10,
         marginTop: 20,
+    },
+    subHeaderButtonContainer: {
+        flexDirection: 'row',
+    },
+    subHeaderButton: {
+        marginRight: 12,
+    },
+    subHeaderButtonText: {
+        fontFamily: Font.IBM.medium,
+        fontSize: 14,
+        color: Theme.TEXT_COLOR_LIGHT,
+    },
+    subHeaderButtonTextActive: {
+        color: Theme.PRIMARY,
     },
 });
 
