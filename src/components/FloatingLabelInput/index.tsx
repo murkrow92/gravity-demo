@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useEffect } from 'react';
+import React, { useCallback, useState, useEffect, forwardRef } from 'react';
 import { TextInput, StyleSheet, TextInputProps, Pressable, Text } from 'react-native';
 import Animated, {
     Easing,
@@ -18,7 +18,7 @@ interface FloatingLabelInputProps extends TextInputProps {
     onIconPress?: () => void;
 }
 
-const FloatingLabelInput = (props: FloatingLabelInputProps) => {
+const FloatingLabelInput = forwardRef((props: FloatingLabelInputProps, ref) => {
     const { label, value, icon, onIconPress, error } = props;
     const [isFocused, setIsFocused] = useState(false);
     const labelPosition = useSharedValue(0);
@@ -78,6 +78,7 @@ const FloatingLabelInput = (props: FloatingLabelInputProps) => {
             <Text style={styles.label}>{label}</Text>
             <Animated.View style={[containerStyle]}>
                 <TextInput
+                    ref={ref}
                     placeholderTextColor={Theme.SECONDARY_TEXT_COLOR}
                     value={value}
                     {...props}
@@ -94,7 +95,7 @@ const FloatingLabelInput = (props: FloatingLabelInputProps) => {
             <Animated.Text style={errorStyle}>{error}</Animated.Text>
         </>
     );
-};
+});
 
 const styles = StyleSheet.create({
     border: {

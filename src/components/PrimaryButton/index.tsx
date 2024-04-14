@@ -1,6 +1,7 @@
 import React from 'react';
 import { Text, Pressable, StyleSheet, PressableProps, StyleProp, ViewStyle } from 'react-native';
 import Theme from '@theme';
+import { Font } from '@theme/font';
 
 interface PrimaryButtonProps extends PressableProps {
     title: string;
@@ -26,6 +27,7 @@ const styles = StyleSheet.create({
         backgroundColor: Theme.PRIMARY,
     },
     text: {
+        fontFamily: Font.IBM.bold,
         color: Theme.TEXT_COLOR,
         fontSize: 16,
         textAlign: 'center',

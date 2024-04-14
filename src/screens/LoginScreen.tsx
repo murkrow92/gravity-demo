@@ -1,5 +1,13 @@
-import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { Image, KeyboardAvoidingView, ScrollView, StyleSheet, Text, View } from 'react-native';
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import {
+    Image,
+    KeyboardAvoidingView,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    View,
+} from 'react-native';
 import Spacing from '@components/Spacing.tsx';
 import FloatingLabelInput from '@components/FloatingLabelInput';
 import PrimaryButton from '@components/PrimaryButton';
@@ -49,6 +57,7 @@ function LoginScreen() {
     const [errorMessage, setErrorMessage] = useState('');
     const mounted = useRef(false);
     const opacity = useSharedValue(0);
+    const passwordInputRef = useRef<TextInput>();
 
     useEffect(() => {
         mounted.current = true;
@@ -82,9 +91,22 @@ function LoginScreen() {
         return '';
     }, [password]);
 
+    const onUsernameSubmit = useCallback(() => {
+        passwordInputRef?.current?.focus();
+    }, []);
+
+    const onPasswordSubmit = useCallback(() => {
+        mutate({ username, password });
+    }, [username, password]);
+
     return (
         <SafeAreaView edges={['bottom', 'top']} style={styles.container}>
-            <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" enabled>
+            <KeyboardAvoidingView
+                style={{ flex: 1 }}
+                keyboardVerticalOffset={80}
+                behavior="padding"
+                enabled
+            >
                 <ScrollView scrollEnabled={false}>
                     <Spacing size={32} direction="vertical" />
                     <Image
@@ -101,9 +123,11 @@ function LoginScreen() {
                             value={username}
                             onChangeText={setUsername}
                             error={errorUserName}
+                            onSubmitEditing={onUsernameSubmit}
                         />
                         <Spacing size={16} direction="vertical" />
                         <FloatingLabelInput
+                            ref={passwordInputRef}
                             placeholder={TestAccount.password}
                             label="Password"
                             value={password}
@@ -112,6 +136,7 @@ function LoginScreen() {
                             icon={showPassword ? 'eye-slash' : 'eye'}
                             onIconPress={() => setShowPassword(!showPassword)}
                             error={errorPassword}
+                            onSubmitEditing={onPasswordSubmit}
                         />
                         <Spacing size={4} direction="vertical" />
                         <Animated.View style={[animatedStyles, styles.errorContainer]}>
