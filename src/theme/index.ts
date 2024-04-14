@@ -8,7 +8,7 @@ const Theme = {
     PRIMARY: '#FFEA00',
     WHITE: '#fff',
     PRIMARY_BACKGROUND_COLOR: '#fff',
-    TEXT_COLOR: '#000',
+    TEXT_COLOR: '#6D7182',
 };
 
 export default Theme;

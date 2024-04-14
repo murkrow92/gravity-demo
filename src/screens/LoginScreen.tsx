@@ -11,6 +11,17 @@ import { AuthContext } from '@navigation/RootNavigation.tsx';
 import LoadingModal from '@components/Modal/LoadingModal';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
+import { Font } from '@theme/font';
+
+function WelcomeText() {
+    return (
+        <View style={styles.form}>
+            <Text style={{ color: Theme.TEXT_COLOR, fontSize: 14, textAlign: 'center' }}>
+                Welcome, please sign in to access your account
+            </Text>
+        </View>
+    );
+}
 
 function LoginScreen() {
     const authContext = useContext(AuthContext);
@@ -69,22 +80,16 @@ function LoginScreen() {
     }, [password]);
 
     return (
-        <SafeAreaView edges={['bottom']} style={styles.container}>
+        <SafeAreaView edges={['bottom', 'top']} style={styles.container}>
             <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" enabled>
                 <ScrollView scrollEnabled={false}>
                     <Spacing size={32} direction="vertical" />
                     <Image
-                        source={require('../assets/images/login_image.png')}
-                        style={{ height: 160 }}
+                        source={require('../assets/images/logo-light.png')}
+                        style={styles.logo}
                     />
                     <Spacing size={32} direction="vertical" />
-                    <View style={styles.form}>
-                        <Text
-                            style={{ color: Theme.TEXT_COLOR, fontSize: 22, textAlign: 'center' }}
-                        >
-                            Welcome, please sign in to access your account
-                        </Text>
-                    </View>
+                    <WelcomeText />
                     <Spacing size={32} direction="vertical" />
                     <View style={styles.form}>
                         <FloatingLabelInput
@@ -126,9 +131,15 @@ function LoginScreen() {
 }
 
 const styles = StyleSheet.create({
+    logo: {
+        height: 50,
+        aspectRatio: 4.3,
+        alignSelf: 'center',
+    },
     container: {
         flex: 1,
         alignItems: 'center',
+        backgroundColor: '#2C3849',
     },
     form: {
         paddingHorizontal: 16,
@@ -145,6 +156,12 @@ const styles = StyleSheet.create({
         marginLeft: 10,
         color: '#D32F2F',
         fontSize: 16,
+    },
+    welcome: {
+        color: Theme.WHITE,
+        fontSize: 14,
+        fontFamily: Font.IBM.medium,
+        textAlign: 'center',
     },
 });
 
