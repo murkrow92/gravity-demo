@@ -36,7 +36,7 @@ const CurrencyList = (props: CurrencyListProps) => {
 
     // eslint-disable-next-line react/no-unused-prop-types
     const itemRender = useCallback(({ item }: { item: Currency }) => {
-        const { symbol } = item;
+        const { symbol, price } = item;
         const [firstPart, suffix] = detachSymbol(item.symbol, filter || '');
         return (
             <TouchableOpacity
@@ -53,6 +53,7 @@ const CurrencyList = (props: CurrencyListProps) => {
                     navigation.navigate('Trade', {
                         symbol,
                         suffix,
+                        price,
                     });
                 }}
             >
@@ -61,7 +62,7 @@ const CurrencyList = (props: CurrencyListProps) => {
                     {suffix ? '/' : ''}
                     <Text style={{ color: Theme.TEXT_COLOR }}>{suffix}</Text>
                 </Text>
-                <Text style={{ color: Theme.TEXT_COLOR }}>${item.price}</Text>
+                <Text style={{ color: Theme.TEXT_COLOR }}>${price}</Text>
             </TouchableOpacity>
         );
     }, []);

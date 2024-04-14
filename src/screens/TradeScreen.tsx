@@ -1,13 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import {
-    View,
-    StyleSheet,
-    Text,
-    Alert,
-    TextInput,
-    TouchableOpacity,
-    ScrollView,
-} from 'react-native';
+import { View, StyleSheet, Text, Alert, TouchableOpacity, ScrollView } from 'react-native';
 import Theme from '@theme';
 import { Font } from '@theme/font.ts';
 import { useRoute } from '@react-navigation/native';
@@ -16,21 +8,25 @@ import { RootStackParamList } from '@typing/navigation';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { detachSymbol } from '../utils/symbolUtils.ts';
 import PrimaryButton from '@components/PrimaryButton';
+import SuffixInput from '@components/SuffixInput';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Trade'>;
 
 const TradeScreen: React.FC = () => {
     const { params } = useRoute<Props['route']>();
-    const { symbol, suffix } = params;
-    const tokenPair = useMemo(() => {
-        return suffix ? detachSymbol(symbol, suffix) : [];
+    const { symbol, suffix, price: paramPrice = '' } = params;
+    const [mainToken, tokenToCompare] = useMemo(() => {
+        return suffix ? detachSymbol(symbol, suffix) : ['', ''];
     }, [symbol, suffix]);
-    const availableBalance = availableBalances[suffix || '']?.tokenBalance || 0;
     const [isBuyMode, setIsBuyMode] = useState(true);
     const [orderType, setOrderType] = useState('LIMIT');
-    const [price, setPrice] = useState('');
+    const [price, setPrice] = useState(paramPrice);
     const [amount, setAmount] = useState('');
     const [total, setTotal] = useState('');
+
+    const tokenToTrade = isBuyMode ? tokenToCompare : mainToken;
+    const tokenToTradeFor = isBuyMode ? mainToken : tokenToCompare;
+    const availableBalance = availableBalances[tokenToTrade]?.tokenBalance || 0;
 
     const calculateTotal = (newPrice: string, newAmount: string) => {
         const numericPrice = parseFloat(newPrice);
@@ -71,6 +67,15 @@ const TradeScreen: React.FC = () => {
                 },
             ]
         );
+    };
+
+    const validateNumericInputs = (text: string) => {
+        const numericText = parseFloat(text);
+        if (Number.isNaN(numericText)) {
+            throw new Error('Input must be numeric');
+        } else if (numericText < 0.01) {
+            throw new Error('Value cannot be less than 0.01');
+        }
     };
 
     return (
@@ -145,29 +150,35 @@ const TradeScreen: React.FC = () => {
                     </TouchableOpacity>
                 </View>
                 <Text style={styles.balanceText}>
-                    Available balance {availableBalance.toFixed(2)} {suffix}
+                    Available balance {availableBalance.toFixed(2)} {tokenToTrade}
                 </Text>
                 {orderType === 'LIMIT' && (
                     <>
-                        <TextInput
-                            style={styles.input}
+                        <SuffixInput
+                            title="Price"
+                            placeholder="0"
+                            placeholderTextColor={Theme.TEXT_COLOR_LIGHT}
+                            suffix={tokenToTrade}
                             value={price}
                             onChangeText={newPrice => {
                                 setPrice(newPrice);
                                 calculateTotal(newPrice, amount);
                             }}
-                            placeholder="Price"
                             keyboardType="numeric"
+                            validator={validateNumericInputs}
                         />
-                        <TextInput
-                            style={styles.input}
+                        <SuffixInput
+                            title="Amount"
+                            placeholder="0"
+                            placeholderTextColor={Theme.TEXT_COLOR_LIGHT}
+                            suffix={tokenToTradeFor}
                             value={amount}
                             onChangeText={newAmount => {
                                 setAmount(newAmount);
                                 calculateTotal(price, newAmount);
                             }}
-                            placeholder="Amount"
                             keyboardType="numeric"
+                            validator={validateNumericInputs}
                         />
                     </>
                 )}
@@ -175,14 +186,17 @@ const TradeScreen: React.FC = () => {
                     {['25%', '50%', '75%', '100%'].map(percentage => (
                         <TouchableOpacity
                             key={percentage}
+                            style={styles.percentageButton}
                             onPress={() => handlePercentagePress(parseFloat(percentage) / 100)}
                         >
-                            <Text>{percentage}</Text>
+                            <Text style={styles.percentageButtonText}>{percentage}</Text>
                         </TouchableOpacity>
                     ))}
                 </View>
-                <TextInput
-                    style={styles.input}
+                <SuffixInput
+                    style={{ marginTop: 20 }}
+                    placeholder="0"
+                    placeholderTextColor={Theme.TEXT_COLOR_LIGHT}
                     value={total}
                     onChangeText={newTotal => {
                         setTotal(newTotal);
@@ -190,12 +204,22 @@ const TradeScreen: React.FC = () => {
                             calculateAmount(newTotal);
                         }
                     }}
-                    placeholder="Total"
+                    title="Total"
+                    suffix={tokenToTrade}
                     keyboardType="numeric"
+                    validator={text => {
+                        const numericText = parseFloat(text);
+                        if (Number.isNaN(numericText)) {
+                            throw new Error('Input must be numeric');
+                        } else if (numericText > availableBalance) {
+                            throw new Error('Your balance is insufficient');
+                        }
+                    }}
                 />
             </ScrollView>
             <PrimaryButton
-                title={`${isBuyMode ? 'Buy' : 'Sell'} ${tokenPair[0] || ''}`}
+                buttonStyle={{ backgroundColor: isBuyMode ? Theme.PRIMARY : Theme.WARNING }}
+                title={`${isBuyMode ? 'Buy' : 'Sell'} ${mainToken}`}
                 onPress={handleOrderConfirmation}
             />
         </View>
@@ -239,9 +263,9 @@ const styles = StyleSheet.create({
         color: Theme.TEXT_COLOR_DARK,
     },
     balanceText: {
-        color: 'white',
-        alignSelf: 'center',
-        marginVertical: 10,
+        color: Theme.TEXT_COLOR_LIGHT,
+        marginTop: 20,
+        marginBottom: 12,
     },
     input: {
         backgroundColor: 'white',
@@ -251,7 +275,7 @@ const styles = StyleSheet.create({
     },
     percentagesRow: {
         flexDirection: 'row',
-        justifyContent: 'space-around',
+        justifyContent: 'space-between',
     },
     confirmButton: {
         backgroundColor: '#00ff00',
@@ -271,6 +295,19 @@ const styles = StyleSheet.create({
     },
     subHeaderButtonTextActive: {
         color: Theme.PRIMARY,
+    },
+    percentageButton: {
+        width: '23%',
+        backgroundColor: '#3E4E64',
+        borderRadius: 4,
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingVertical: 4,
+    },
+    percentageButtonText: {
+        fontFamily: Font.IBM.regular,
+        fontSize: 14,
+        color: Theme.TEXT_COLOR_LIGHT,
     },
 });
 

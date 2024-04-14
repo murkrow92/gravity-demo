@@ -6,6 +6,7 @@ export type RootStackParamList = {
     Trade: {
         symbol: string;
         suffix?: string;
+        price: string;
     };
 };
 
