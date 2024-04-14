@@ -9,6 +9,7 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { detachSymbol } from '../utils/symbolUtils.ts';
 import PrimaryButton from '@components/PrimaryButton';
 import SuffixInput from '@components/SuffixInput';
+import { formatDecimalNumber } from '../utils/numberUtils.ts';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Trade'>;
 
@@ -45,7 +46,7 @@ const TradeScreen: React.FC = () => {
     };
 
     const handlePercentagePress = (percentage: number) => {
-        const numericTotal = (availableBalance * percentage).toFixed(8);
+        const numericTotal = formatDecimalNumber(availableBalance * percentage);
         setTotal(numericTotal);
         calculateAmount(numericTotal);
     };
@@ -207,7 +208,7 @@ const TradeScreen: React.FC = () => {
                     </TouchableOpacity>
                 </View>
                 <Text style={styles.balanceText}>
-                    Available balance {availableBalance.toFixed(8)} {tokenToTrade}
+                    Available balance {formatDecimalNumber(availableBalance)} {tokenToTrade}
                 </Text>
                 {renderLimit()}
                 {renderMarket()}
