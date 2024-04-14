@@ -1,68 +1,68 @@
-import React, { useMemo } from 'react';
-import {
-    FlatList,
-    Text,
-    StyleSheet,
-    useWindowDimensions,
-    View,
-    TouchableOpacity,
-} from 'react-native';
+import React, { useCallback, useMemo } from 'react';
+import { FlatList, Text, StyleSheet, useWindowDimensions, View, Pressable } from 'react-native';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import Theme from '@theme';
 import { useQuery } from '@tanstack/react-query';
 import CurrencyModule from '@api/service/currency.ts';
 import type { Currency } from '@api/service/type';
-import { useNavigation } from '@react-navigation/native';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import Spacing from '@components/Spacing.tsx';
 
 interface CurrencyListProps {
     data: Currency[];
+    filter?: string;
 }
 
 function filterBySuffix(data: Currency[], suffix: string): Currency[] {
     return data.filter(item => item.symbol.endsWith(suffix));
 }
 
-const FirstRoute = (props: CurrencyListProps) => {
-    const navigation = useNavigation();
-    const { data } = props;
+function detachSymbol(symbol: string, suffix: string): string[] {
+    if (symbol.endsWith(suffix)) {
+        const firstPart = symbol.substring(0, symbol.length - suffix.length);
+        return [firstPart, suffix];
+    }
+    return [];
+}
+
+const CurrencyList = (props: CurrencyListProps) => {
+    const { data, filter } = props;
+
+    const filterData = useMemo(() => {
+        if (data) {
+            return filter ? filterBySuffix(data, filter) : data;
+        }
+        return [];
+    }, [data]);
+
+    // eslint-disable-next-line react/no-unused-prop-types
+    const itemRender = useCallback(({ item }: { item: Currency }) => {
+        const [firstPart, suffix] = detachSymbol(item.symbol, filter || '');
+        return (
+            <View
+                style={{
+                    width: '100%',
+                    flexDirection: 'row',
+                    height: 40,
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    paddingHorizontal: 16,
+                }}
+            >
+                <Text style={{ color: Theme.TEXT_COLOR }}>
+                    {firstPart}
+                    {suffix ? '/' : ''}
+                    <Text style={{ color: Theme.TEXT_COLOR }}>{suffix}</Text>
+                </Text>
+                <Text style={{ color: Theme.TEXT_COLOR }}>${item.price}</Text>
+            </View>
+        );
+    }, []);
+
     return (
-        <FlatList
-            data={data}
-            renderItem={({ item }) => (
-                <TouchableOpacity
-                    onPress={() => {
-                        navigation.navigate('Trade', {
-                            currency: item,
-                        });
-                    }}
-                    style={{
-                        width: '100%',
-                        flexDirection: 'row',
-                        height: 40,
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        paddingHorizontal: 16,
-                    }}
-                >
-                    <Text style={{ color: Theme.TEXT_COLOR }}>{item.symbol}</Text>
-                    <Text style={{ color: Theme.TEXT_COLOR }}>${item.price}</Text>
-                </TouchableOpacity>
-            )}
-            keyExtractor={item => item.symbol}
-        />
+        <FlatList data={filterData} renderItem={itemRender} keyExtractor={item => item.symbol} />
     );
 };
-
-const SecondRoute = () => (
-    <FlatList
-        data={[
-            { key: '1', title: 'Third Item' },
-            { key: '2', title: 'Fourth Item' },
-        ]}
-        renderItem={({ item }) => <Text style={styles.item}>{item.title}</Text>}
-        keyExtractor={item => item.key}
-    />
-);
 
 const MyTabView = () => {
     const { data } = useQuery({
@@ -71,10 +71,18 @@ const MyTabView = () => {
     });
     const layout = useWindowDimensions();
     const [index, setIndex] = React.useState(0);
+    const [sortAsc, setSortAsc] = React.useState(true);
 
-    const usdtData = useMemo(() => {
-        return data ? filterBySuffix(data, 'USDT') : [];
-    }, [data]);
+    const sortDataByPrice = useMemo(() => {
+        if (!data) return [];
+        const sortedData = [...data];
+        sortedData.sort((a, b) => {
+            return sortAsc
+                ? parseFloat(a.price) - parseFloat(b.price)
+                : parseFloat(b.price) - parseFloat(a.price);
+        });
+        return sortedData;
+    }, [data, sortAsc]);
 
     return (
         <TabView
@@ -90,31 +98,60 @@ const MyTabView = () => {
                 ],
             }}
             renderScene={SceneMap({
-                all: () => <FirstRoute data={data || []} />,
-                usdt: () => <FirstRoute data={usdtData} />,
-                eth: SecondRoute,
-                btc: SecondRoute,
-                fdusd: SecondRoute,
-                usdc: SecondRoute,
+                all: () => <CurrencyList data={sortDataByPrice} />,
+                usdt: () => <CurrencyList data={sortDataByPrice} filter="USDT" />,
+                eth: () => <CurrencyList data={sortDataByPrice} filter="ETH" />,
+                btc: () => <CurrencyList data={sortDataByPrice} filter="BTC" />,
+                fdusd: () => <CurrencyList data={sortDataByPrice} filter="FDUSD" />,
+                usdc: () => <CurrencyList data={sortDataByPrice} filter="USDC" />,
             })}
             onIndexChange={setIndex}
             initialLayout={{ width: layout.width }}
             renderTabBar={props => (
-                <TabBar
-                    {...props}
-                    indicatorStyle={styles.tabIndicator}
-                    labelStyle={styles.tabLabel}
-                    style={{ backgroundColor: 'white', shadowColor: '#fff' }}
-                    scrollEnabled
-                    tabStyle={{ width: 80 }}
-                    renderLabel={({ route, focused }) => (
-                        <View style={[styles.tabItem, focused ? styles.tabItemFocused : null]}>
-                            <Text style={{ color: focused ? Theme.WHITE : Theme.TEXT_COLOR }}>
-                                {route.title}
-                            </Text>
+                <View>
+                    <TabBar
+                        {...props}
+                        indicatorStyle={styles.tabIndicator}
+                        labelStyle={styles.tabLabel}
+                        style={{ backgroundColor: 'white', shadowColor: '#fff' }}
+                        scrollEnabled
+                        tabStyle={{ width: 80 }}
+                        renderLabel={({ route, focused }) => (
+                            <View style={[styles.tabItem, focused ? styles.tabItemFocused : null]}>
+                                <Text style={{ color: focused ? Theme.WHITE : Theme.TEXT_COLOR }}>
+                                    {route.title}
+                                </Text>
+                            </View>
+                        )}
+                    />
+                    <View
+                        style={{
+                            paddingTop: 8,
+                            width: '100%',
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            paddingHorizontal: 16,
+                        }}
+                    >
+                        <Text style={{ color: Theme.TEXT_COLOR }}>Name</Text>
+                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                            <Text style={{ color: Theme.TEXT_COLOR }}>Price</Text>
+                            <Spacing size={4} direction="horizontal" />
+                            <Pressable
+                                onPress={() => {
+                                    setSortAsc(!sortAsc);
+                                }}
+                            >
+                                <FontAwesome
+                                    name={sortAsc ? 'sort-amount-asc' : 'sort-amount-desc'}
+                                    size={16}
+                                    color={Theme.TEXT_COLOR}
+                                />
+                            </Pressable>
                         </View>
-                    )}
-                />
+                    </View>
+                </View>
             )}
         />
     );

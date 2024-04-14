@@ -5,6 +5,9 @@ import CurrencyPriceScreen from '@screens/CurrencyPricesScreen.tsx';
 import TradeScreen from '@screens/TradeScreen.tsx';
 import type { RootStackParamList } from '@typing/navigation';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Pressable } from 'react-native';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import Theme from '@theme';
 
 const RootStack = createNativeStackNavigator<RootStackParamList>();
 export const AuthContext = React.createContext({
@@ -99,7 +102,28 @@ function RootNavigation() {
                     />
                 ) : (
                     <>
-                        <RootStack.Screen name="CurrencyPrices" component={CurrencyPriceScreen} />
+                        <RootStack.Screen
+                            name="CurrencyPrices"
+                            options={{
+                                // eslint-disable-next-line react/no-unstable-nested-components
+                                headerRight: () => {
+                                    return (
+                                        <Pressable
+                                            onPress={() => {
+                                                dispatch({ type: 'SIGN_OUT' });
+                                            }}
+                                        >
+                                            <FontAwesome
+                                                name="sign-out"
+                                                size={16}
+                                                color={Theme.TEXT_COLOR}
+                                            />
+                                        </Pressable>
+                                    );
+                                },
+                            }}
+                            component={CurrencyPriceScreen}
+                        />
                         <RootStack.Screen name="Trade" component={TradeScreen} />
                     </>
                 )}
