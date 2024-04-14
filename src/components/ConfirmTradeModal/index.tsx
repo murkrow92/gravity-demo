@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 import Modal from 'react-native-modal';
+import Theme from '@theme';
+import { Font } from '@theme/font.ts';
 
 interface ConfirmationModalProps {
     isVisible: boolean;
@@ -33,21 +35,28 @@ const ConfirmTradeModal: React.FC<ConfirmationModalProps> = ({
     };
 
     return (
-        <Modal isVisible={isVisible} onBackdropPress={onCancel} onBackButtonPress={onCancel}>
+        <Modal
+            isVisible={isVisible}
+            onBackdropPress={isLoading ? undefined : onCancel}
+            onBackButtonPress={isLoading ? undefined : onCancel}
+            style={{ justifyContent: 'flex-end', margin: 0 }}
+        >
             <View style={styles.modalContent}>
-                <Text style={styles.modalTitle}>Confirm Order</Text>
+                <Text style={styles.modalTitle}>Confirm Trade</Text>
                 <Text style={styles.modalMessage}>Are you sure you want to place this trade?</Text>
                 {isLoading ? (
-                    <ActivityIndicator size="large" color="#0000ff" />
+                    <View style={styles.footer}>
+                        <ActivityIndicator size="large" color={Theme.PRIMARY} />
+                    </View>
                 ) : (
-                    <>
+                    <View style={styles.footer}>
                         <TouchableOpacity style={styles.confirmButton} onPress={handleConfirm}>
-                            <Text style={styles.buttonText}>Confirm</Text>
+                            <Text style={styles.buttonTextConfirm}>Confirm</Text>
                         </TouchableOpacity>
                         <TouchableOpacity style={styles.cancelButton} onPress={onCancel}>
-                            <Text style={styles.buttonText}>Cancel</Text>
+                            <Text style={styles.buttonTextCancel}>Cancel</Text>
                         </TouchableOpacity>
-                    </>
+                    </View>
                 )}
             </View>
         </Modal>
@@ -56,8 +65,8 @@ const ConfirmTradeModal: React.FC<ConfirmationModalProps> = ({
 
 const styles = StyleSheet.create({
     modalContent: {
-        backgroundColor: 'white',
-        padding: 22,
+        backgroundColor: Theme.POPUP_BACKGROUND_COLOR,
+        padding: 16,
         justifyContent: 'center',
         alignItems: 'center',
         borderRadius: 4,
@@ -66,27 +75,47 @@ const styles = StyleSheet.create({
     modalTitle: {
         fontSize: 20,
         marginBottom: 10,
+        fontFamily: Font.IBM.bold,
+        color: Theme.TEXT_COLOR_LIGHT,
     },
     modalMessage: {
         fontSize: 16,
         textAlign: 'center',
         marginBottom: 20,
+        fontFamily: Font.IBM.regular,
+        color: Theme.TEXT_COLOR_LIGHT,
     },
     confirmButton: {
-        backgroundColor: 'green',
-        padding: 10,
-        margin: 5,
-        borderRadius: 4,
+        width: '100%',
+        backgroundColor: Theme.PRIMARY,
+        borderRadius: 8,
+        height: 36,
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     cancelButton: {
-        backgroundColor: 'red',
-        padding: 10,
-        margin: 5,
-        borderRadius: 4,
+        width: '100%',
+        marginTop: 8,
+        borderRadius: 8,
+        height: 48,
+        alignItems: 'center',
+        justifyContent: 'center',
     },
-    buttonText: {
-        color: 'white',
-        textAlign: 'center',
+    buttonTextConfirm: {
+        color: Theme.TEXT_COLOR_DARK,
+        fontFamily: Font.IBM.bold,
+        fontSize: 16,
+    },
+    buttonTextCancel: {
+        color: Theme.TEXT_COLOR_LIGHT,
+        fontFamily: Font.IBM.bold,
+        fontSize: 16,
+    },
+    footer: {
+        width: '100%',
+        height: 100,
+        alignItems: 'center',
+        justifyContent: 'center',
     },
 });
 

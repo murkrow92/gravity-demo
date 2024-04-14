@@ -55,22 +55,7 @@ const TradeScreen: React.FC = () => {
     };
 
     const handleOrderConfirmation = () => {
-        // Here you should have the logic to send the order to your API
-        // For now, we'll just show an alert
-        Alert.alert(
-            isBuyMode ? 'Confirm Buy Order' : 'Confirm Sell Order',
-            `Are you sure you want to ${isBuyMode ? 'buy' : 'sell'} ${mainToken}?`,
-            [
-                { text: 'Cancel', style: 'cancel' },
-                {
-                    text: 'Confirm',
-                    onPress: () => {
-                        // Here you would call your API to execute the order
-                        Alert.alert('Order placed successfully!');
-                    },
-                },
-            ]
-        );
+        setConfirmModalVisible(true);
     };
 
     const validateNumericInputs = (text: string) => {
