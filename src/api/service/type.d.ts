@@ -8,3 +8,8 @@ export interface User {
     image: string;
     token: string;
 }
+
+export interface Currency {
+    symbol: string;
+    price: string;
+}
