@@ -9,4 +9,7 @@ export const availableBalances: Record<string, BalanceDetail> = {
     BTC: {
         tokenBalance: 0.01,
     },
+    BTTC: {
+        tokenBalance: 355.1239504,
+    },
 };

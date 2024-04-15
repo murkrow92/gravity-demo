@@ -44,15 +44,17 @@ const TradeScreen: React.FC = () => {
         const numericTotal = parseFloat(total);
         const numericPrice = parseFloat(price);
         const numericAmount = parseFloat(amount);
-        return (
-            !Number.isNaN(numericTotal) &&
-            numericTotal > 0 &&
-            numericTotal <= availableBalance &&
-            !Number.isNaN(numericPrice) &&
-            numericPrice > 0.01 &&
-            !Number.isNaN(numericAmount) &&
-            numericAmount > 0.01
-        );
+
+        const isTotalValid =
+            !Number.isNaN(numericTotal) && numericTotal > 0 && numericTotal <= availableBalance;
+
+        return orderType === 'LIMIT'
+            ? isTotalValid &&
+                  !Number.isNaN(numericPrice) &&
+                  numericPrice > 0.01 &&
+                  !Number.isNaN(numericAmount) &&
+                  numericAmount > 0.01
+            : isTotalValid;
     }, [total]);
 
     const calculateTotal = (newPrice: string, newAmount: string) => {
