@@ -113,6 +113,7 @@ export default ToastProvider;
 
 const styles = StyleSheet.create({
     toast: {
+        elevation: 5,
         paddingHorizontal: 12,
         marginHorizontal: 16,
         backgroundColor: Theme.POPUP_BACKGROUND_COLOR,

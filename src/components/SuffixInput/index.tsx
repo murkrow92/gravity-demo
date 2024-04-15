@@ -7,6 +7,7 @@ import {
     TextInputProps,
     StyleProp,
     ViewStyle,
+    Platform,
 } from 'react-native';
 import Theme from '@theme';
 import { Font } from '@theme/font.ts';
@@ -62,7 +63,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     inputContainer: {
-        paddingVertical: 8,
+        paddingVertical: Platform.OS === 'ios' ? 8 : 0,
         flexDirection: 'row',
         borderColor: Theme.BORDER,
         borderWidth: 1,
