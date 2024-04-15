@@ -16,7 +16,7 @@
 - The currency is re-fetch every 3 seconds.
 - A filter.
 - A button to clear the authentication information.
-- `All tab` is required in the requirement, but it causes problems in the Trade Screen, so I decide to skip it.
+- `All tab` is required in the requirement, but it can cause problems in the Trade Screen, so I decide to skip it.
 - Some optimizations for the list rendering by using memoization, React-query caching and Flashlist. Could be better if we have more time.
 
 ### Trading Screen
