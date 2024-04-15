@@ -283,7 +283,8 @@ const TradeScreen: React.FC = () => {
             <ConfirmTradeModal
                 isVisible={confirmModalVisible}
                 onConfirm={() => {
-                    navigation.dispatch(StackActions.replace('CurrencyPrices'));
+                    navigation.goBack();
+                    // navigation.dispatch(StackActions.replace('CurrencyPrices'));
                 }}
                 onCancel={() => {
                     setConfirmModalVisible(false);

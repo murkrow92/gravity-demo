@@ -11,6 +11,7 @@ import React, {
 import { StyleSheet, Text, View, Animated } from 'react-native';
 import { Font } from '@theme/font.ts';
 import Theme from '@theme';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export interface ToastOpenParams {
     title: string;
@@ -112,13 +113,16 @@ export const useToast = () => useContext(ToastContext);
 export default ToastProvider;
 
 const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+    },
     toast: {
         elevation: 5,
         paddingHorizontal: 12,
         marginHorizontal: 16,
         backgroundColor: Theme.POPUP_BACKGROUND_COLOR,
         position: 'absolute',
-        top: 30,
+        top: 54,
         left: 0,
         right: 0,
         alignItems: 'center',
