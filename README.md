@@ -1,6 +1,30 @@
-This is a Gravity Assignment 
 
-# How to run this application
+# [APK File for Testing](https://github.com/murkrow92/gravity-demo/releases/tag/1.0.0)
+
+# Changelog
+
+## [1.0.0] - 2024-04-15
+### Login Screen
+- Login Form with mock data filled username and password.
+- Animation for the text input.
+- Validation in empty data.
+- Mock authentication request with a loading indicator.
+- Cache the authentication information
+
+### Currency List Screen 
+- A List of Currency Price. 
+- The currency is re-fetch every 3 seconds.
+- A filter.
+- A button to clear the authentication information.
+- `All tab` is required in the requirement, but it causes problems in the Trade Screen, so I decide to skip it.
+- Some optimizations for the list rendering by using memoization, React-query caching and Flashlist. Could be better if we have more time.
+
+### Trading Screen
+- A Trade Form with many calculations and validations (I could be wrong here).
+- A mock call request and a loading indicator.
+- A bottom sheet to confirm the transaction
+
+# How to run this application locally
 
 
 ## Prerequisites:
