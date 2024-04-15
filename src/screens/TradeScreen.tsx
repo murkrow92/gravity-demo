@@ -52,9 +52,9 @@ const TradeScreen: React.FC = () => {
         return orderType === 'LIMIT'
             ? isTotalValid &&
                   !Number.isNaN(numericPrice) &&
-                  numericPrice > 0.01 &&
+                  numericPrice >= 0.01 &&
                   !Number.isNaN(numericAmount) &&
-                  numericAmount > 0.01
+                  numericAmount >= 0.01
             : isTotalValid;
     }, [total]);
 
