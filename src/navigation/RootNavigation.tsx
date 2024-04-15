@@ -138,7 +138,7 @@ function RootNavigation() {
                         <RootStack.Screen
                             name="Trade"
                             options={{
-                                headerBackTitle: '',
+                                headerBackTitleVisible: false,
                             }}
                             component={TradeScreen}
                         />

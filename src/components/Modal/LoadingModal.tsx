@@ -61,8 +61,8 @@ const styles = StyleSheet.create({
     modalText: {
         marginVertical: 15,
         textAlign: 'center',
-        fontSize: 17,
+        fontSize: 16,
         marginLeft: 15,
-        color: Theme.TEXT_COLOR,
+        color: Theme.PLACE_HOLDER_TEXT_COLOR,
     },
 });

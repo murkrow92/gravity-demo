@@ -11,6 +11,7 @@ import { formatDecimalNumber } from '@utils/numberUtils.ts';
 import PrimaryButton from '@components/PrimaryButton';
 import SuffixInput from '@components/SuffixInput';
 import ConfirmTradeModal from '@components/ConfirmTradeModal';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Trade'>;
 
@@ -152,7 +153,7 @@ const TradeScreen: React.FC = () => {
     };
 
     return (
-        <View style={styles.container}>
+        <SafeAreaView edges={['bottom']} style={styles.container}>
             <ScrollView>
                 <View style={styles.buttonGroup}>
                     <TouchableOpacity
@@ -288,14 +289,15 @@ const TradeScreen: React.FC = () => {
                     setConfirmModalVisible(false);
                 }}
             />
-        </View>
+        </SafeAreaView>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        padding: 16,
+        paddingTop: 16,
+        paddingHorizontal: 16,
         backgroundColor: Theme.PRIMARY_BACKGROUND_COLOR,
     },
     buttonGroup: {

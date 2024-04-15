@@ -62,6 +62,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     inputContainer: {
+        paddingVertical: 8,
         flexDirection: 'row',
         borderColor: Theme.BORDER,
         borderWidth: 1,
@@ -73,6 +74,7 @@ const styles = StyleSheet.create({
         flex: 1,
         color: '#FFFFFF',
         textAlign: 'right',
+        paddingRight: 8,
     },
     suffix: {
         color: Theme.TEXT_COLOR_LIGHT,

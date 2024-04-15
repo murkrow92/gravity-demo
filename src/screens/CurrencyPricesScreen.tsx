@@ -42,6 +42,7 @@ const ListItem = memo(
                 activeOpacity={1}
                 onPress={() => {
                     navigation.navigate('Trade', {
+                        headerBackTitle: '',
                         symbol,
                         suffix,
                         price,
