@@ -195,7 +195,7 @@ const styles = StyleSheet.create({
     },
     welcome: {
         color: Theme.WHITE,
-        fontSize: 14,
+        fontSize: 20,
         fontFamily: Font.IBM.regular,
         textAlign: 'center',
     },

@@ -51,7 +51,7 @@ const ListItem = memo(
                 <Text
                     style={{
                         color: Theme.TEXT_COLOR,
-                        fontSize: 12,
+                        fontSize: 16,
                         fontFamily: Font.IBM.medium,
                     }}
                 >
@@ -60,7 +60,7 @@ const ListItem = memo(
                     <Text
                         style={{
                             color: Theme.TEXT_COLOR,
-                            fontSize: 12,
+                            fontSize: 16,
                             fontFamily: Font.IBM.medium,
                         }}
                     >
@@ -68,7 +68,7 @@ const ListItem = memo(
                     </Text>
                 </Text>
                 <Text
-                    style={{ color: Theme.TEXT_COLOR, fontFamily: Font.IBM.medium, fontSize: 12 }}
+                    style={{ color: Theme.TEXT_COLOR, fontFamily: Font.IBM.medium, fontSize: 14 }}
                 >
                     {price}
                 </Text>
@@ -174,7 +174,7 @@ const MyTabView = () => {
                                     style={{
                                         textAlign: 'center',
                                         fontFamily: Font.IBM.bold,
-                                        fontSize: 10,
+                                        fontSize: 14,
                                         color: focused ? Theme.PRIMARY : Theme.WHITE,
                                     }}
                                 >
@@ -235,7 +235,7 @@ const styles = StyleSheet.create({
         fontSize: 18,
     },
     tabLabel: {
-        fontSize: 12,
+        fontSize: 14,
         color: 'black',
     },
     tabIndicator: {

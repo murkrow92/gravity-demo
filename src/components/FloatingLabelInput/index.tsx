@@ -103,14 +103,14 @@ const styles = StyleSheet.create({
     },
     input: {
         height: 40,
-        fontSize: 14,
+        fontSize: 16,
         color: Theme.TEXT_COLOR,
         width: '100%',
         fontFamily: Font.IBM.medium,
     },
     label: {
         color: Theme.WHITE,
-        fontSize: 10,
+        fontSize: 14,
         fontFamily: Font.IBM.regular,
     },
     icon: {
