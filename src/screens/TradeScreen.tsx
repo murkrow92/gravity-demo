@@ -58,6 +58,8 @@ const TradeScreen: React.FC = () => {
             : isTotalValid;
     }, [total]);
 
+    const isDisabled = !isTradeValid;
+
     const calculateTotal = (newPrice: string, newAmount: string) => {
         const numericPrice = parseFloat(newPrice);
         const numericAmount = parseFloat(newAmount);
@@ -276,7 +278,7 @@ const TradeScreen: React.FC = () => {
                         ? { backgroundColor: isBuyMode ? Theme.PRIMARY : Theme.WARNING }
                         : { backgroundColor: Theme.BORDER }
                 }
-                disabled={isTradeValid}
+                disabled={isDisabled}
                 title={`${isBuyMode ? 'Buy' : 'Sell'} ${mainToken}`}
                 onPress={handleOrderConfirmation}
             />
