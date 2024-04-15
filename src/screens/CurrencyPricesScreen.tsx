@@ -16,7 +16,7 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Spacing from '@components/Spacing.tsx';
 import { useNavigation } from '@react-navigation/native';
 import { FlashList } from '@shopify/flash-list';
-import { detachSymbol, filterBySuffix } from '../utils/symbolUtils.ts';
+import { detachSymbol, filterBySuffix } from '@utils/symbolUtils.ts';
 
 interface CurrencyListProps {
     data: Currency[];
@@ -115,7 +115,7 @@ const MyTabView = () => {
             case 'usdc':
                 return <CurrencyList data={sortDataByPrice} filter="USDC" />;
             default:
-                return null; // Handle any other undefined tabs or default case
+                return null;
         }
     };
 

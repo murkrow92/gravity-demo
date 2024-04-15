@@ -1,15 +1,15 @@
 import React, { useMemo, useState } from 'react';
-import { View, StyleSheet, Text, Alert, TouchableOpacity, ScrollView } from 'react-native';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Theme from '@theme';
 import { Font } from '@theme/font.ts';
 import { StackActions, useNavigation, useRoute } from '@react-navigation/native';
-import { availableBalances } from '../mocks/balance.ts';
+import { availableBalances } from '@mocks/balance.ts';
 import { RootStackParamList } from '@typing/navigation';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { detachSymbol } from '../utils/symbolUtils.ts';
+import { detachSymbol } from '@utils/symbolUtils.ts';
+import { formatDecimalNumber } from '@utils/numberUtils.ts';
 import PrimaryButton from '@components/PrimaryButton';
 import SuffixInput from '@components/SuffixInput';
-import { formatDecimalNumber } from '../utils/numberUtils.ts';
 import ConfirmTradeModal from '@components/ConfirmTradeModal';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Trade'>;
