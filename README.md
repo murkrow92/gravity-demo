@@ -1,6 +1,8 @@
 
 # [APK File for Testing](https://github.com/murkrow92/gravity-demo/releases/tag/1.0.0)
 
+# [Demo Screenshots](./screenshots)
+
 # Changelog
 
 ## [1.0.0] - 2024-04-15
