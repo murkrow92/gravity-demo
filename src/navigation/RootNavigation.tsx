@@ -135,7 +135,13 @@ function RootNavigation() {
                             }}
                             component={CurrencyPriceScreen}
                         />
-                        <RootStack.Screen name="Trade" component={TradeScreen} />
+                        <RootStack.Screen
+                            name="Trade"
+                            options={{
+                                headerBackTitle: '',
+                            }}
+                            component={TradeScreen}
+                        />
                     </>
                 )}
             </RootStack.Navigator>

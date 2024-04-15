@@ -17,6 +17,7 @@ import Spacing from '@components/Spacing.tsx';
 import { useNavigation } from '@react-navigation/native';
 import { FlashList } from '@shopify/flash-list';
 import { detachSymbol, filterBySuffix } from '@utils/symbolUtils.ts';
+import { Font } from '@theme/font';
 
 interface CurrencyListProps {
     data: Currency[];
@@ -47,12 +48,30 @@ const ListItem = memo(
                     });
                 }}
             >
-                <Text style={{ color: Theme.TEXT_COLOR }}>
+                <Text
+                    style={{
+                        color: Theme.TEXT_COLOR,
+                        fontSize: 12,
+                        fontFamily: Font.IBM.medium,
+                    }}
+                >
                     {firstPart}
                     {suffix ? '/' : ''}
-                    <Text style={{ color: Theme.TEXT_COLOR }}>{suffix}</Text>
+                    <Text
+                        style={{
+                            color: Theme.TEXT_COLOR,
+                            fontSize: 12,
+                            fontFamily: Font.IBM.medium,
+                        }}
+                    >
+                        {suffix}
+                    </Text>
                 </Text>
-                <Text style={{ color: Theme.TEXT_COLOR }}>{price}</Text>
+                <Text
+                    style={{ color: Theme.TEXT_COLOR, fontFamily: Font.IBM.medium, fontSize: 12 }}
+                >
+                    {price}
+                </Text>
             </TouchableOpacity>
         );
     },
@@ -151,7 +170,14 @@ const MyTabView = () => {
                         tabStyle={{ width: 80 }}
                         renderLabel={({ route, focused }) => (
                             <View style={[styles.tabItem, focused ? styles.tabItemFocused : null]}>
-                                <Text style={{ color: focused ? Theme.WHITE : Theme.TEXT_COLOR }}>
+                                <Text
+                                    style={{
+                                        textAlign: 'center',
+                                        fontFamily: Font.IBM.bold,
+                                        fontSize: 10,
+                                        color: focused ? Theme.PRIMARY : Theme.WHITE,
+                                    }}
+                                >
                                     {route.title}
                                 </Text>
                             </View>
@@ -159,7 +185,7 @@ const MyTabView = () => {
                     />
                     <View
                         style={{
-                            paddingTop: 8,
+                            paddingVertical: 8,
                             width: '100%',
                             flexDirection: 'row',
                             alignItems: 'center',
@@ -167,14 +193,28 @@ const MyTabView = () => {
                             paddingHorizontal: 16,
                         }}
                     >
-                        <Text style={{ color: Theme.TEXT_COLOR }}>Name</Text>
+                        <Text
+                            style={{
+                                color: Theme.PLACE_HOLDER_TEXT_COLOR,
+                                fontFamily: Font.IBM.bold,
+                            }}
+                        >
+                            Name
+                        </Text>
                         <Pressable
                             onPress={() => {
                                 setSortAsc(!sortAsc);
                             }}
                             style={{ flexDirection: 'row', alignItems: 'center' }}
                         >
-                            <Text style={{ color: Theme.TEXT_COLOR }}>Price</Text>
+                            <Text
+                                style={{
+                                    color: Theme.PLACE_HOLDER_TEXT_COLOR,
+                                    fontFamily: Font.IBM.bold,
+                                }}
+                            >
+                                Price
+                            </Text>
                             <Spacing size={4} direction="horizontal" />
                             <FontAwesome
                                 name={sortAsc ? 'sort-amount-asc' : 'sort-amount-desc'}
@@ -203,11 +243,11 @@ const styles = StyleSheet.create({
     },
     tabItem: {
         paddingVertical: 2,
-        width: 50,
+        width: 60,
         alignItems: 'center',
     },
     tabItemFocused: {
-        backgroundColor: Theme.TEXT_INPUT_DEFAULT_COLOR,
+        backgroundColor: Theme.PLACE_HOLDER_TEXT_COLOR,
         borderRadius: 8,
     },
 });
