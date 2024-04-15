@@ -75,7 +75,9 @@ const Toast = forwardRef((props, ref) => {
         };
     });
 
-    if (!visible) return null;
+    if (!visible) {
+        return null;
+    }
 
     return (
         <Animated.View style={[styles.toast, { opacity: fadeAnim }]}>
