@@ -3,6 +3,12 @@
 
 # [Demo Screenshots](./screenshots)
 
+# Stack
+- React-Native 0.73.6
+- React-query for caching, fetching data
+- Memoization for performance optimization
+- Reanimated for animations
+
 # Changelog
 
 ## [1.0.0] - 2024-04-15
